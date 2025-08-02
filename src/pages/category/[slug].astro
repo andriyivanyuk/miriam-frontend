@@ -1,0 +1,53 @@
+---
+export const prerender = false;
+
+import { Astro } from 'astro';
+
+const { slug } = Astro.params;
+
+const apiUrl = `https://miriam-backend.onrender.com/api/menu-categories?filters[slug][$eq]=${slug}&populate=products.product_type`;
+
+let category = null;
+let products = [];
+
+try {
+  const res = await fetch(apiUrl);
+  const json = await res.json();
+  category = json.data?.[0];
+  products = category?.products || [];
+} catch (error) {
+  console.error('Помилка при завантаженні категорії:', error);
+}
+---
+
+<html lang="uk">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Категорія: {category?.name || slug}</title>
+  </head>
+  <body>
+    <h1>Категорія: {category?.name || slug}</h1>
+
+   {products.length > 0 ? (
+  <ul>
+    {products.map((product) => {
+      const komodType = product.product_type?.find(
+        (pt) => pt.__component === 'product-types.komodi'
+      );
+      const modelName = komodType?.model_name || 'Без назви';
+      const basicPrice = komodType?.basic_price ?? 'Ціна не вказана';
+
+      return (
+        <li>
+          {modelName} — {basicPrice} грн
+        </li>
+      );
+    })}
+  </ul>
+) : (
+  <p>Товарів у цій категорії ще немає.</p>
+)}
+
+
+  </body>
+</html>
