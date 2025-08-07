@@ -117,31 +117,33 @@ function getImgUrl(img: { url: string }) {
                                         <i class="fa fa-expand" />
                                       </div>
                                     </div>
-                                    <ul class="product-tab nav nav-tabs d-flex">
-                                      {images.map((img, i) => (
-                                        <li
-                                          class={`${i === 0 ? "active" : ""} col`}
-                                        >
-                                          <a
-                                            href={`#item${i + 1}`}
-                                            data-toggle="tab"
-                                            aria-expanded={
-                                              i === 0 ? "true" : undefined
-                                            }
-                                            class={
-                                              i === 0
-                                                ? "active show"
-                                                : undefined
-                                            }
+                                    {images.length > 1 && (
+                                      <ul class="product-tab nav nav-tabs d-flex">
+                                        {images.map((img, i) => (
+                                          <li
+                                            class={`${i === 0 ? "active" : ""} col`}
                                           >
-                                            <img
-                                              src={getImgUrl(img)}
-                                              alt={img?.alt || "img"}
-                                            />
-                                          </a>
-                                        </li>
-                                      ))}
-                                    </ul>
+                                            <a
+                                              href={`#item${i + 1}`}
+                                              data-toggle="tab"
+                                              aria-expanded={
+                                                i === 0 ? "true" : undefined
+                                              }
+                                              class={
+                                                i === 0
+                                                  ? "active show"
+                                                  : undefined
+                                              }
+                                            >
+                                              <img
+                                                src={getImgUrl(img)}
+                                                alt={img?.alt || "img"}
+                                              />
+                                            </a>
+                                          </li>
+                                        ))}
+                                      </ul>
+                                    )}
                                     <div
                                       class="modal fade"
                                       id="product-modal"
@@ -169,34 +171,39 @@ function getImgUrl(img: { url: string }) {
                                                       </div>
                                                     ))}
                                                   </div>
-                                                  <ul class="product-tab nav nav-tabs">
-                                                    {images.map((img, i) => (
-                                                      <li
-                                                        class={
-                                                          i === 0
-                                                            ? "active"
-                                                            : ""
-                                                        }
-                                                      >
-                                                        <a
-                                                          href={`#modal-item${i + 1}`}
-                                                          data-toggle="tab"
+                                                  {images.length > 1 && (
+                                                    <ul class="product-tab nav nav-tabs">
+                                                      {images.map((img, i) => (
+                                                        <li
                                                           class={
                                                             i === 0
-                                                              ? "active show"
-                                                              : undefined
+                                                              ? "active"
+                                                              : ""
                                                           }
                                                         >
-                                                          <img
-                                                            src={getImgUrl(img)}
-                                                            alt={
-                                                              img?.alt || "img"
+                                                          <a
+                                                            href={`#modal-item${i + 1}`}
+                                                            data-toggle="tab"
+                                                            class={
+                                                              i === 0
+                                                                ? "active show"
+                                                                : undefined
                                                             }
-                                                          />
-                                                        </a>
-                                                      </li>
-                                                    ))}
-                                                  </ul>
+                                                          >
+                                                            <img
+                                                              src={getImgUrl(
+                                                                img,
+                                                              )}
+                                                              alt={
+                                                                img?.alt ||
+                                                                "img"
+                                                              }
+                                                            />
+                                                          </a>
+                                                        </li>
+                                                      ))}
+                                                    </ul>
+                                                  )}
                                                 </div>
                                               </div>
                                             </div>
