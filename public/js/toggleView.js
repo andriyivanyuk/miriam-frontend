@@ -2,8 +2,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const tabs = document.querySelectorAll(".nav-tabs li a");
   const panes = document.querySelectorAll(".tab-content .tab-pane");
 
-  console.log(tabs, panes);
-
   tabs.forEach((tab) => {
     tab.addEventListener("click", (e) => {
       e.preventDefault();

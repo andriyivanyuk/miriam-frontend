@@ -3,6 +3,7 @@ export const prerender = false;
 
 import { Astro } from "astro";
 import Header from "../../components/Header.astro";
+import Footer from "../../components/Footer.astro";
 
 const { slug } = Astro.params;
 const sort = Astro.url.searchParams.get("sort") ?? "";
@@ -170,7 +171,10 @@ try {
                                     <div class="item text-center col-md-4">
                                       <div class="product-miniature js-product-miniature item-one first-item">
                                         <div class="thumbnail-container border">
-                                          <a href="#" class="img-height">
+                                          <a
+                                            href={`/product/${product.documentId}`}
+                                            class="img-height"
+                                          >
                                             {imageCover && (
                                               <img
                                                 class="img-fluid image-cover"
@@ -362,6 +366,8 @@ try {
         </div>
       </div>
     </div>
+
+    <Footer />
 
     <!-- Vendor JS -->
     <script src="/libs/jquery/jquery.min.js" is:inline></script>

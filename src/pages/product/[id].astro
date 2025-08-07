@@ -1,0 +1,56 @@
+---
+import Header from "../../components/Header.astro";
+import Footer from "../../components/Footer.astro";
+
+const productId = Astro.params.id;
+const apiUrl = `https://miriam-backend.onrender.com/api/products/${productId}?populate[product_type][populate]=*`;
+
+let product = null;
+
+try {
+  const res = await fetch(apiUrl);
+  const json = await res.json();
+  product = json.data;
+} catch (error) {
+  console.error("Помилка при завантаженні продукту:", error);
+}
+---
+
+<html lang="uk">
+  <head>
+    <meta charset="UTF-8" />
+    <title>{product?.product_type?.[0]?.model_name ?? "Деталі товару"}</title>
+    <base href="/" />
+  </head>
+  <body>
+    <div class="main-content">
+      <div class="container mt-5 mb-5">
+        {
+          product ? (
+            <div class="row">
+              <div class="col-md-6">
+                <img
+                  src={product.product_type?.[0]?.images?.[0]?.url}
+                  class="img-fluid"
+                  alt="Зображення товару"
+                />
+              </div>
+              <div class="col-md-6">
+                <h1>{product.product_type?.[0]?.model_name}</h1>
+                <p>{product.product_type?.[0]?.furniture_description}</p>
+                <p>
+                  <strong>Ціна:</strong>{" "}
+                  {product.product_type?.[0]?.basic_price} грн
+                </p>
+              </div>
+            </div>
+          ) : (
+            <p>Товар не знайдено.</p>
+          )
+        }
+      </div>
+    </div>
+
+    <Footer />
+  </body>
+</html>
