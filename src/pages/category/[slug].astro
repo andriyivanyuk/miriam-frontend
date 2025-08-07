@@ -6,7 +6,7 @@ import Header from "../../components/Header.astro";
 
 const { slug } = Astro.params;
 
-const apiUrl = `https://miriam-backend.onrender.com/api/menu-categories?filters[slug][$eq]=${slug}&populate=products.product_type`;
+const apiUrl = `https://miriam-backend.onrender.com/api/menu-categories?filters[slug][$eq]=${slug}&populate[products][populate]=product_type.images`;
 
 let category = null;
 let products = [];
@@ -51,32 +51,10 @@ try {
     <!-- Template CSS -->
     <link rel="stylesheet" type="text/css" href="/css/style.css" />
     <link rel="stylesheet" type="text/css" href="/css/reponsive.css" />
+    <link rel="stylesheet" type="text/css" href="/css/custom.css" />
   </head>
   <body id="product-sidebar-left" class="product-grid-sidebar-left">
     <Header />
-    <h1>Категорія: {category?.name || slug}</h1>
-
-    {
-      products.length > 0 ? (
-        <ul>
-          {products.map((product) => {
-            const komodType = product.product_type?.find(
-              (pt) => pt.__component === "product-types.komodi",
-            );
-            const modelName = komodType?.model_name || "Без назви";
-            const basicPrice = komodType?.basic_price ?? "Ціна не вказана";
-
-            return (
-              <li>
-                {modelName} — {basicPrice} грн
-              </li>
-            );
-          })}
-        </ul>
-      ) : (
-        <p>Товарів у цій категорії ще немає.</p>
-      )
-    }
 
     <div class="main-content">
       <div id="wrapper-site">
@@ -154,1614 +132,269 @@ try {
                           class="related tab-pane fade in active show"
                         >
                           <div class="row">
-                            <div class="item text-center col-md-4">
-                              <div
-                                class="product-miniature js-product-miniature item-one first-item"
-                              >
-                                <div class="thumbnail-container border">
-                                  <a href="product-detail.html">
-                                    <img
-                                      class="img-fluid image-cover"
-                                      src="img/product/8.jpg"
-                                      alt="img"
-                                    />
-                                    <img
-                                      class="img-fluid image-secondary"
-                                      src="img/product/14.jpg"
-                                      alt="img"
-                                    />
-                                  </a>
-                                  <div class="highlighted-informations">
-                                    <div class="variant-links">
-                                      <a
-                                        href="#"
-                                        class="color beige"
-                                        title="Beige"></a>
-                                      <a
-                                        href="#"
-                                        class="color orange"
-                                        title="Orange"></a>
-                                      <a
-                                        href="#"
-                                        class="color green"
-                                        title="Green"></a>
-                                    </div>
-                                  </div>
-                                </div>
-                                <div class="product-description">
-                                  <div class="product-groups">
-                                    <div class="product-title">
-                                      <a href="product-detail.html"
-                                        >Nulla et justo non augue</a
-                                      >
-                                    </div>
-                                    <div class="rating">
-                                      <div class="star-content">
-                                        <div class="star"></div>
-                                        <div class="star"></div>
-                                        <div class="star"></div>
-                                        <div class="star"></div>
-                                        <div class="star"></div>
-                                      </div>
-                                    </div>
-                                    <div class="product-group-price">
-                                      <div class="product-price-and-shipping">
-                                        <span class="price">£34.54</span>
-                                      </div>
-                                    </div>
-                                  </div>
-                                  <div
-                                    class="product-buttons d-flex justify-content-center"
-                                  >
-                                    <form
-                                      action="#"
-                                      method="post"
-                                      class="formAddToCart"
-                                    >
-                                      <input
-                                        type="hidden"
-                                        name="id_product"
-                                        value="1"
-                                      />
-                                      <a
-                                        class="add-to-cart"
-                                        href="#"
-                                        data-button-action="add-to-cart"
-                                      >
-                                        <i
-                                          class="fa fa-shopping-cart"
-                                          aria-hidden="true"></i>
-                                      </a>
-                                    </form>
-                                    <a
-                                      class="addToWishlist"
-                                      href="#"
-                                      data-rel="1"
-                                      onclick=""
-                                    >
-                                      <i class="fa fa-heart" aria-hidden="true"
-                                      ></i>
-                                    </a>
-                                    <a
-                                      href="#"
-                                      class="quick-view hidden-sm-down"
-                                      data-link-action="quickview"
-                                    >
-                                      <i class="fa fa-eye" aria-hidden="true"
-                                      ></i>
-                                    </a>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                            <div class="item text-center col-md-4">
-                              <div
-                                class="product-miniature js-product-miniature item-one first-item"
-                              >
-                                <div class="thumbnail-container border">
-                                  <a href="product-detail.html">
-                                    <img
-                                      class="img-fluid image-cover"
-                                      src="img/product/11.jpg"
-                                      alt="img"
-                                    />
-                                    <img
-                                      class="img-fluid image-secondary"
-                                      src="img/product/12.jpg"
-                                      alt="img"
-                                    />
-                                  </a>
-                                  <div class="highlighted-informations">
-                                    <div class="variant-links">
-                                      <a
-                                        href="#"
-                                        class="color beige"
-                                        title="Beige"></a>
-                                      <a
-                                        href="#"
-                                        class="color orange"
-                                        title="Orange"></a>
-                                      <a
-                                        href="#"
-                                        class="color green"
-                                        title="Green"></a>
-                                    </div>
-                                  </div>
-                                </div>
-                                <div class="product-description">
-                                  <div class="product-groups">
-                                    <div class="product-title">
-                                      <a href="product-detail.html"
-                                        >Nulla et justo non augue</a
-                                      >
-                                    </div>
-                                    <div class="rating">
-                                      <div class="star-content">
-                                        <div class="star"></div>
-                                        <div class="star"></div>
-                                        <div class="star"></div>
-                                        <div class="star"></div>
-                                        <div class="star"></div>
-                                      </div>
-                                    </div>
-                                    <div class="product-group-price">
-                                      <div class="product-price-and-shipping">
-                                        <span class="price">£21.08</span>
-                                      </div>
-                                    </div>
-                                  </div>
-                                  <div
-                                    class="product-buttons d-flex justify-content-center"
-                                  >
-                                    <form
-                                      action="#"
-                                      method="post"
-                                      class="formAddToCart"
-                                    >
-                                      <input
-                                        type="hidden"
-                                        name="id_product"
-                                        value="1"
-                                      />
-                                      <a
-                                        class="add-to-cart"
-                                        href="#"
-                                        data-button-action="add-to-cart"
-                                      >
-                                        <i
-                                          class="fa fa-shopping-cart"
-                                          aria-hidden="true"></i>
-                                      </a>
-                                    </form>
-                                    <a
-                                      class="addToWishlist"
-                                      href="#"
-                                      data-rel="1"
-                                      onclick=""
-                                    >
-                                      <i class="fa fa-heart" aria-hidden="true"
-                                      ></i>
-                                    </a>
-                                    <a
-                                      href="#"
-                                      class="quick-view hidden-sm-down"
-                                      data-link-action="quickview"
-                                    >
-                                      <i class="fa fa-eye" aria-hidden="true"
-                                      ></i>
-                                    </a>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                            <div class="item text-center col-md-4">
-                              <div
-                                class="product-miniature js-product-miniature item-one first-item"
-                              >
-                                <div class="thumbnail-container border">
-                                  <a href="product-detail.html">
-                                    <img
-                                      class="img-fluid image-cover"
-                                      src="img/product/13.jpg"
-                                      alt="img"
-                                    />
-                                    <img
-                                      class="img-fluid image-secondary"
-                                      src="img/product/23.jpg"
-                                      alt="img"
-                                    />
-                                  </a>
+                            {
+                              products.length > 0 ? (
+                                products.map((product) => {
+                                  const komodType = product.product_type?.find(
+                                    (pt) =>
+                                      pt.__component === "product-types.komodi",
+                                  );
 
-                                  <div class="highlighted-informations">
-                                    <div class="variant-links">
-                                      <a
-                                        href="#"
-                                        class="color beige"
-                                        title="Beige"></a>
-                                      <a
-                                        href="#"
-                                        class="color orange"
-                                        title="Orange"></a>
-                                      <a
-                                        href="#"
-                                        class="color green"
-                                        title="Green"></a>
-                                    </div>
-                                  </div>
-                                </div>
-                                <div class="product-description">
-                                  <div class="product-groups">
-                                    <div class="product-title">
-                                      <a href="product-detail.html"
-                                        >Nulla et justo non augue</a
-                                      >
-                                    </div>
-                                    <div class="rating">
-                                      <div class="star-content">
-                                        <div class="star"></div>
-                                        <div class="star"></div>
-                                        <div class="star"></div>
-                                        <div class="star"></div>
-                                        <div class="star"></div>
-                                      </div>
-                                    </div>
-                                    <div class="product-group-price">
-                                      <div class="product-price-and-shipping">
-                                        <span class="price">£36.08</span>
-                                      </div>
-                                    </div>
-                                  </div>
-                                  <div
-                                    class="product-buttons d-flex justify-content-center"
-                                  >
-                                    <form
-                                      action="#"
-                                      method="post"
-                                      class="formAddToCart"
-                                    >
-                                      <input
-                                        type="hidden"
-                                        name="id_product"
-                                        value="1"
-                                      />
-                                      <a
-                                        class="add-to-cart"
-                                        href="#"
-                                        data-button-action="add-to-cart"
-                                      >
-                                        <i
-                                          class="fa fa-shopping-cart"
-                                          aria-hidden="true"></i>
-                                      </a>
-                                    </form>
-                                    <a
-                                      class="addToWishlist"
-                                      href="#"
-                                      data-rel="1"
-                                      onclick=""
-                                    >
-                                      <i class="fa fa-heart" aria-hidden="true"
-                                      ></i>
-                                    </a>
-                                    <a
-                                      href="#"
-                                      class="quick-view hidden-sm-down"
-                                      data-link-action="quickview"
-                                    >
-                                      <i class="fa fa-eye" aria-hidden="true"
-                                      ></i>
-                                    </a>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                            <div class="item text-center col-md-4">
-                              <div
-                                class="product-miniature js-product-miniature item-one first-item"
-                              >
-                                <div class="thumbnail-container border">
-                                  <a href="product-detail.html">
-                                    <img
-                                      class="img-fluid image-cover"
-                                      src="img/product/26.jpg"
-                                      alt="img"
-                                    />
-                                    <img
-                                      class="img-fluid image-secondary"
-                                      src="img/product/11.jpg"
-                                      alt="img"
-                                    />
-                                  </a>
+                                  if (!komodType) return null;
 
-                                  <div class="highlighted-informations">
-                                    <div class="variant-links">
-                                      <a
-                                        href="#"
-                                        class="color beige"
-                                        title="Beige"></a>
-                                      <a
-                                        href="#"
-                                        class="color orange"
-                                        title="Orange"></a>
-                                      <a
-                                        href="#"
-                                        class="color green"
-                                        title="Green"></a>
-                                    </div>
-                                  </div>
-                                </div>
-                                <div class="product-description">
-                                  <div class="product-groups">
-                                    <div class="product-title">
-                                      <a href="product-detail.html"
-                                        >Nulla et justo non augue</a
-                                      >
-                                    </div>
-                                    <div class="rating">
-                                      <div class="star-content">
-                                        <div class="star"></div>
-                                        <div class="star"></div>
-                                        <div class="star"></div>
-                                        <div class="star"></div>
-                                        <div class="star"></div>
-                                      </div>
-                                    </div>
-                                    <div class="product-group-price">
-                                      <div class="product-price-and-shipping">
-                                        <span class="price">£66.08</span>
-                                      </div>
-                                    </div>
-                                  </div>
-                                  <div
-                                    class="product-buttons d-flex justify-content-center"
-                                  >
-                                    <form
-                                      action="#"
-                                      method="post"
-                                      class="formAddToCart"
-                                    >
-                                      <input
-                                        type="hidden"
-                                        name="id_product"
-                                        value="1"
-                                      />
-                                      <a
-                                        class="add-to-cart"
-                                        href="#"
-                                        data-button-action="add-to-cart"
-                                      >
-                                        <i
-                                          class="fa fa-shopping-cart"
-                                          aria-hidden="true"></i>
-                                      </a>
-                                    </form>
-                                    <a
-                                      class="addToWishlist"
-                                      href="#"
-                                      data-rel="1"
-                                      onclick=""
-                                    >
-                                      <i class="fa fa-heart" aria-hidden="true"
-                                      ></i>
-                                    </a>
-                                    <a
-                                      href="#"
-                                      class="quick-view hidden-sm-down"
-                                      data-link-action="quickview"
-                                    >
-                                      <i class="fa fa-eye" aria-hidden="true"
-                                      ></i>
-                                    </a>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                            <div class="item text-center col-md-4">
-                              <div
-                                class="product-miniature js-product-miniature item-one first-item"
-                              >
-                                <div class="thumbnail-container border">
-                                  <a href="product-detail.html">
-                                    <img
-                                      class="img-fluid image-cover"
-                                      src="img/product/8.jpg"
-                                      alt="img"
-                                    />
-                                    <img
-                                      class="img-fluid image-secondary"
-                                      src="img/product/14.jpg"
-                                      alt="img"
-                                    />
-                                  </a>
-                                  <div class="highlighted-informations">
-                                    <div class="variant-links">
-                                      <a
-                                        href="#"
-                                        class="color beige"
-                                        title="Beige"></a>
-                                      <a
-                                        href="#"
-                                        class="color orange"
-                                        title="Orange"></a>
-                                      <a
-                                        href="#"
-                                        class="color green"
-                                        title="Green"></a>
-                                    </div>
-                                  </div>
-                                </div>
-                                <div class="product-description">
-                                  <div class="product-groups">
-                                    <div class="product-title">
-                                      <a href="product-detail.html"
-                                        >Nulla et justo non augue</a
-                                      >
-                                    </div>
-                                    <div class="rating">
-                                      <div class="star-content">
-                                        <div class="star"></div>
-                                        <div class="star"></div>
-                                        <div class="star"></div>
-                                        <div class="star"></div>
-                                        <div class="star"></div>
-                                      </div>
-                                    </div>
-                                    <div class="product-group-price">
-                                      <div class="product-price-and-shipping">
-                                        <span class="price">£34.54</span>
-                                      </div>
-                                    </div>
-                                  </div>
-                                  <div
-                                    class="product-buttons d-flex justify-content-center"
-                                  >
-                                    <form
-                                      action="#"
-                                      method="post"
-                                      class="formAddToCart"
-                                    >
-                                      <input
-                                        type="hidden"
-                                        name="id_product"
-                                        value="1"
-                                      />
-                                      <a
-                                        class="add-to-cart"
-                                        href="#"
-                                        data-button-action="add-to-cart"
-                                      >
-                                        <i
-                                          class="fa fa-shopping-cart"
-                                          aria-hidden="true"></i>
-                                      </a>
-                                    </form>
-                                    <a
-                                      class="addToWishlist"
-                                      href="#"
-                                      data-rel="1"
-                                      onclick=""
-                                    >
-                                      <i class="fa fa-heart" aria-hidden="true"
-                                      ></i>
-                                    </a>
-                                    <a
-                                      href="#"
-                                      class="quick-view hidden-sm-down"
-                                      data-link-action="quickview"
-                                    >
-                                      <i class="fa fa-eye" aria-hidden="true"
-                                      ></i>
-                                    </a>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                            <div class="item text-center col-md-4">
-                              <div
-                                class="product-miniature js-product-miniature item-one first-item"
-                              >
-                                <div class="thumbnail-container border">
-                                  <a href="product-detail.html">
-                                    <img
-                                      class="img-fluid image-cover"
-                                      src="img/product/11.jpg"
-                                      alt="img"
-                                    />
-                                    <img
-                                      class="img-fluid image-secondary"
-                                      src="img/product/12.jpg"
-                                      alt="img"
-                                    />
-                                  </a>
-                                  <div class="highlighted-informations">
-                                    <div class="variant-links">
-                                      <a
-                                        href="#"
-                                        class="color beige"
-                                        title="Beige"></a>
-                                      <a
-                                        href="#"
-                                        class="color orange"
-                                        title="Orange"></a>
-                                      <a
-                                        href="#"
-                                        class="color green"
-                                        title="Green"></a>
-                                    </div>
-                                  </div>
-                                </div>
-                                <div class="product-description">
-                                  <div class="product-groups">
-                                    <div class="product-title">
-                                      <a href="product-detail.html"
-                                        >Nulla et justo non augue</a
-                                      >
-                                    </div>
-                                    <div class="rating">
-                                      <div class="star-content">
-                                        <div class="star"></div>
-                                        <div class="star"></div>
-                                        <div class="star"></div>
-                                        <div class="star"></div>
-                                        <div class="star"></div>
-                                      </div>
-                                    </div>
-                                    <div class="product-group-price">
-                                      <div class="product-price-and-shipping">
-                                        <span class="price">£21.08</span>
-                                      </div>
-                                    </div>
-                                  </div>
-                                  <div
-                                    class="product-buttons d-flex justify-content-center"
-                                  >
-                                    <form
-                                      action="#"
-                                      method="post"
-                                      class="formAddToCart"
-                                    >
-                                      <input
-                                        type="hidden"
-                                        name="id_product"
-                                        value="1"
-                                      />
-                                      <a
-                                        class="add-to-cart"
-                                        href="#"
-                                        data-button-action="add-to-cart"
-                                      >
-                                        <i
-                                          class="fa fa-shopping-cart"
-                                          aria-hidden="true"></i>
-                                      </a>
-                                    </form>
-                                    <a
-                                      class="addToWishlist"
-                                      href="#"
-                                      data-rel="1"
-                                      onclick=""
-                                    >
-                                      <i class="fa fa-heart" aria-hidden="true"
-                                      ></i>
-                                    </a>
-                                    <a
-                                      href="#"
-                                      class="quick-view hidden-sm-down"
-                                      data-link-action="quickview"
-                                    >
-                                      <i class="fa fa-eye" aria-hidden="true"
-                                      ></i>
-                                    </a>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                            <div class="item text-center col-md-4">
-                              <div
-                                class="product-miniature js-product-miniature item-one first-item"
-                              >
-                                <div class="thumbnail-container border">
-                                  <a href="product-detail.html">
-                                    <img
-                                      class="img-fluid image-cover"
-                                      src="img/product/13.jpg"
-                                      alt="img"
-                                    />
-                                    <img
-                                      class="img-fluid image-secondary"
-                                      src="img/product/23.jpg"
-                                      alt="img"
-                                    />
-                                  </a>
+                                  const modelName =
+                                    komodType.model_name || "Без назви";
+                                  const basicPrice =
+                                    komodType.basic_price ?? "Ціна не вказана";
 
-                                  <div class="highlighted-informations">
-                                    <div class="variant-links">
-                                      <a
-                                        href="#"
-                                        class="color beige"
-                                        title="Beige"></a>
-                                      <a
-                                        href="#"
-                                        class="color orange"
-                                        title="Orange"></a>
-                                      <a
-                                        href="#"
-                                        class="color green"
-                                        title="Green"></a>
-                                    </div>
-                                  </div>
-                                </div>
-                                <div class="product-description">
-                                  <div class="product-groups">
-                                    <div class="product-title">
-                                      <a href="product-detail.html"
-                                        >Nulla et justo non augue</a
-                                      >
-                                    </div>
-                                    <div class="rating">
-                                      <div class="star-content">
-                                        <div class="star"></div>
-                                        <div class="star"></div>
-                                        <div class="star"></div>
-                                        <div class="star"></div>
-                                        <div class="star"></div>
-                                      </div>
-                                    </div>
-                                    <div class="product-group-price">
-                                      <div class="product-price-and-shipping">
-                                        <span class="price">£36.08</span>
-                                      </div>
-                                    </div>
-                                  </div>
-                                  <div
-                                    class="product-buttons d-flex justify-content-center"
-                                  >
-                                    <form
-                                      action="#"
-                                      method="post"
-                                      class="formAddToCart"
-                                    >
-                                      <input
-                                        type="hidden"
-                                        name="id_product"
-                                        value="1"
-                                      />
-                                      <a
-                                        class="add-to-cart"
-                                        href="#"
-                                        data-button-action="add-to-cart"
-                                      >
-                                        <i
-                                          class="fa fa-shopping-cart"
-                                          aria-hidden="true"></i>
-                                      </a>
-                                    </form>
-                                    <a
-                                      class="addToWishlist"
-                                      href="#"
-                                      data-rel="1"
-                                      onclick=""
-                                    >
-                                      <i class="fa fa-heart" aria-hidden="true"
-                                      ></i>
-                                    </a>
-                                    <a
-                                      href="#"
-                                      class="quick-view hidden-sm-down"
-                                      data-link-action="quickview"
-                                    >
-                                      <i class="fa fa-eye" aria-hidden="true"
-                                      ></i>
-                                    </a>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                            <div class="item text-center col-md-4">
-                              <div
-                                class="product-miniature js-product-miniature item-one first-item"
-                              >
-                                <div class="thumbnail-container border">
-                                  <a href="product-detail.html">
-                                    <img
-                                      class="img-fluid image-cover"
-                                      src="img/product/26.jpg"
-                                      alt="img"
-                                    />
-                                    <img
-                                      class="img-fluid image-secondary"
-                                      src="img/product/11.jpg"
-                                      alt="img"
-                                    />
-                                  </a>
+                                  const imageCover =
+                                    komodType.images?.[0]?.formats?.medium
+                                      ?.url ||
+                                    komodType.images?.[0]?.url ||
+                                    null;
 
-                                  <div class="highlighted-informations">
-                                    <div class="variant-links">
-                                      <a
-                                        href="#"
-                                        class="color beige"
-                                        title="Beige"></a>
-                                      <a
-                                        href="#"
-                                        class="color orange"
-                                        title="Orange"></a>
-                                      <a
-                                        href="#"
-                                        class="color green"
-                                        title="Green"></a>
-                                    </div>
-                                  </div>
-                                </div>
-                                <div class="product-description">
-                                  <div class="product-groups">
-                                    <div class="product-title">
-                                      <a href="product-detail.html"
-                                        >Nulla et justo non augue</a
-                                      >
-                                    </div>
-                                    <div class="rating">
-                                      <div class="star-content">
-                                        <div class="star"></div>
-                                        <div class="star"></div>
-                                        <div class="star"></div>
-                                        <div class="star"></div>
-                                        <div class="star"></div>
+                                  const imageSecondary =
+                                    komodType.images?.[1]?.formats?.medium
+                                      ?.url ||
+                                    komodType.images?.[1]?.url ||
+                                    imageCover;
+
+                                  return (
+                                    <div class="item text-center col-md-4">
+                                      <div class="product-miniature js-product-miniature item-one first-item">
+                                        <div class="thumbnail-container border">
+                                          <a href="#" class="img-height">
+                                            {imageCover && (
+                                              <img
+                                                class="img-fluid image-cover"
+                                                src={imageCover}
+                                                alt={modelName}
+                                              />
+                                            )}
+                                            {imageSecondary && (
+                                              <img
+                                                class="img-fluid image-secondary"
+                                                src={imageSecondary}
+                                                alt={modelName}
+                                              />
+                                            )}
+                                          </a>
+                                        </div>
+                                        <div class="product-description">
+                                          <div class="product-groups">
+                                            <div class="product-title">
+                                              <a href="#">{modelName}</a>
+                                            </div>
+                                            <div class="rating">
+                                              <div class="star-content">
+                                                <div class="star" />
+                                                <div class="star" />
+                                                <div class="star" />
+                                                <div class="star" />
+                                                <div class="star" />
+                                              </div>
+                                            </div>
+                                            <div class="product-group-price">
+                                              <div class="product-price-and-shipping">
+                                                <span class="price">
+                                                  {basicPrice} грн
+                                                </span>
+                                              </div>
+                                            </div>
+                                          </div>
+                                          <div class="product-buttons d-flex justify-content-center">
+                                            <form
+                                              action="#"
+                                              method="post"
+                                              class="formAddToCart"
+                                            >
+                                              <input
+                                                type="hidden"
+                                                name="id_product"
+                                                value="1"
+                                              />
+                                              <a
+                                                class="add-to-cart"
+                                                href="#"
+                                                data-button-action="add-to-cart"
+                                              >
+                                                <i
+                                                  class="fa fa-shopping-cart"
+                                                  aria-hidden="true"
+                                                />
+                                              </a>
+                                            </form>
+                                            <a
+                                              class="addToWishlist"
+                                              href="#"
+                                              data-rel="1"
+                                            >
+                                              <i
+                                                class="fa fa-heart"
+                                                aria-hidden="true"
+                                              />
+                                            </a>
+                                            <a
+                                              href="#"
+                                              class="quick-view hidden-sm-down"
+                                              data-link-action="quickview"
+                                            >
+                                              <i
+                                                class="fa fa-eye"
+                                                aria-hidden="true"
+                                              />
+                                            </a>
+                                          </div>
+                                        </div>
                                       </div>
                                     </div>
-                                    <div class="product-group-price">
-                                      <div class="product-price-and-shipping">
-                                        <span class="price">£66.08</span>
-                                      </div>
-                                    </div>
-                                  </div>
-                                  <div
-                                    class="product-buttons d-flex justify-content-center"
-                                  >
-                                    <form
-                                      action="#"
-                                      method="post"
-                                      class="formAddToCart"
-                                    >
-                                      <input
-                                        type="hidden"
-                                        name="id_product"
-                                        value="1"
-                                      />
-                                      <a
-                                        class="add-to-cart"
-                                        href="#"
-                                        data-button-action="add-to-cart"
-                                      >
-                                        <i
-                                          class="fa fa-shopping-cart"
-                                          aria-hidden="true"></i>
-                                      </a>
-                                    </form>
-                                    <a
-                                      class="addToWishlist"
-                                      href="#"
-                                      data-rel="1"
-                                      onclick=""
-                                    >
-                                      <i class="fa fa-heart" aria-hidden="true"
-                                      ></i>
-                                    </a>
-                                    <a
-                                      href="#"
-                                      class="quick-view hidden-sm-down"
-                                      data-link-action="quickview"
-                                    >
-                                      <i class="fa fa-eye" aria-hidden="true"
-                                      ></i>
-                                    </a>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
+                                  );
+                                })
+                              ) : (
+                                <p>Товарів у цій категорії ще немає.</p>
+                              )
+                            }
                           </div>
                         </div>
                         <div id="list" class="related tab-pane fade">
                           <div class="row">
-                            <div class="item col-md-12">
-                              <div
-                                class="product-miniature item-one first-item"
-                              >
-                                <div class="row">
-                                  <div class="col-md-4">
-                                    <div class="thumbnail-container border">
-                                      <a href="product-detail.html">
-                                        <img
-                                          class="img-fluid image-cover"
-                                          src="img/product/1.jpg"
-                                          alt="img"
-                                        />
-                                        <img
-                                          class="img-fluid image-secondary"
-                                          src="img/product/22.jpg"
-                                          alt="img"
-                                        />
-                                      </a>
-                                    </div>
-                                  </div>
-                                  <div class="col-md-8">
-                                    <div class="product-description">
-                                      <div class="product-groups">
-                                        <div class="product-title">
-                                          <a href="product-detail.html"
-                                            >Nulla et justo non augue</a
-                                          >
-                                          <span class="info-stock">
-                                            <i
-                                              class="fa fa-check-square-o"
-                                              aria-hidden="true"></i>
-                                            In Stock
-                                          </span>
-                                        </div>
-                                        <div class="rating">
-                                          <div class="star-content">
-                                            <div class="star"></div>
-                                            <div class="star"></div>
-                                            <div class="star"></div>
-                                            <div class="star"></div>
-                                            <div class="star"></div>
+                            {
+                              products.length > 0 ? (
+                                products.map((product) => {
+                                  const komodType = product.product_type?.find(
+                                    (pt) =>
+                                      pt.__component === "product-types.komodi",
+                                  );
+
+                                  if (!komodType) return null;
+
+                                  const modelName =
+                                    komodType.model_name || "Без назви";
+                                  const basicPrice =
+                                    komodType.basic_price ?? "Ціна не вказана";
+
+                                  const imageCover =
+                                    komodType.images?.[0]?.formats?.medium
+                                      ?.url ||
+                                    komodType.images?.[0]?.url ||
+                                    null;
+
+                                  const imageSecondary =
+                                    komodType.images?.[1]?.formats?.medium
+                                      ?.url ||
+                                    komodType.images?.[1]?.url ||
+                                    imageCover;
+
+                                  return (
+                                    <div class="item col-md-12">
+                                      <div class="product-miniature js-product-miniature item-one first-item">
+                                        <div class="row">
+                                          <div class="col-md-4">
+                                            <div class="thumbnail-container border">
+                                              <a href="#" class="img-height">
+                                                {imageCover && (
+                                                  <img
+                                                    class="img-fluid image-cover"
+                                                    src={imageCover}
+                                                    alt={modelName}
+                                                  />
+                                                )}
+                                                {imageSecondary && (
+                                                  <img
+                                                    class="img-fluid image-secondary"
+                                                    src={imageSecondary}
+                                                    alt={modelName}
+                                                  />
+                                                )}
+                                              </a>
+                                            </div>
+                                          </div>
+                                          <div class="col-md-8">
+                                            <div class="product-description">
+                                              <div class="product-groups">
+                                                <div class="product-title">
+                                                  <a href="#">{modelName}</a>
+                                                  <span class="info-stock">
+                                                    <i
+                                                      class="fa fa-check-square-o"
+                                                      aria-hidden="true"
+                                                    />
+                                                    In Stock
+                                                  </span>
+                                                </div>
+                                                <div class="rating">
+                                                  <div class="star-content">
+                                                    <div class="star" />
+                                                    <div class="star" />
+                                                    <div class="star" />
+                                                    <div class="star" />
+                                                    <div class="star" />
+                                                  </div>
+                                                </div>
+                                                <div class="product-group-price">
+                                                  <div class="product-price-and-shipping">
+                                                    <span class="price">
+                                                      {basicPrice} грн
+                                                    </span>
+                                                  </div>
+                                                </div>
+                                                <div class="discription">
+                                                  Опис товару тимчасово
+                                                  відсутній...
+                                                </div>
+                                              </div>
+                                              <div class="product-buttons d-flex">
+                                                <form
+                                                  action="#"
+                                                  method="post"
+                                                  class="formAddToCart"
+                                                >
+                                                  <a
+                                                    class="add-to-cart"
+                                                    href="#"
+                                                    data-button-action="add-to-cart"
+                                                  >
+                                                    <i
+                                                      class="fa fa-shopping-cart"
+                                                      aria-hidden="true"
+                                                    />
+                                                    Add to cart
+                                                  </a>
+                                                </form>
+                                                <a
+                                                  class="addToWishlist"
+                                                  href="#"
+                                                  data-rel="1"
+                                                >
+                                                  <i
+                                                    class="fa fa-heart"
+                                                    aria-hidden="true"
+                                                  />
+                                                </a>
+                                                <a
+                                                  href="#"
+                                                  class="quick-view hidden-sm-down"
+                                                  data-link-action="quickview"
+                                                >
+                                                  <i
+                                                    class="fa fa-eye"
+                                                    aria-hidden="true"
+                                                  />
+                                                </a>
+                                              </div>
+                                            </div>
                                           </div>
                                         </div>
-                                        <div class="product-group-price">
-                                          <div
-                                            class="product-price-and-shipping"
-                                          >
-                                            <span class="price">£28.08</span>
-                                          </div>
-                                        </div>
-                                        <div class="discription">
-                                          Lorem ipsum dolor sit amet,
-                                          consectetur adipiscing elit. Etiam
-                                          ultricies eget velit vitae bibendum.
-                                          Cras condimentum libero a lectus
-                                          ultricies...
-                                        </div>
-                                      </div>
-                                      <div class="product-buttons d-flex">
-                                        <form
-                                          action="#"
-                                          method="post"
-                                          class="formAddToCart"
-                                        >
-                                          <a
-                                            class="add-to-cart"
-                                            href="#"
-                                            data-button-action="add-to-cart"
-                                          >
-                                            <i
-                                              class="fa fa-shopping-cart"
-                                              aria-hidden="true"></i>Add to cart
-                                          </a>
-                                        </form>
-                                        <a
-                                          class="addToWishlist"
-                                          href="#"
-                                          data-rel="1"
-                                          onclick=""
-                                        >
-                                          <i
-                                            class="fa fa-heart"
-                                            aria-hidden="true"></i>
-                                        </a>
-                                        <a
-                                          href="#"
-                                          class="quick-view hidden-sm-down"
-                                          data-link-action="quickview"
-                                        >
-                                          <i
-                                            class="fa fa-eye"
-                                            aria-hidden="true"></i>
-                                        </a>
                                       </div>
                                     </div>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                            <div class="item col-md-12">
-                              <div
-                                class="product-miniature js-product-miniature item-one first-item"
-                              >
-                                <div class="row">
-                                  <div class="col-md-4">
-                                    <div class="thumbnail-container border">
-                                      <a href="product-detail.html">
-                                        <img
-                                          class="img-fluid image-cover"
-                                          src="img/product/2.jpg"
-                                          alt="img"
-                                        />
-                                        <img
-                                          class="img-fluid image-secondary"
-                                          src="img/product/11.jpg"
-                                          alt="img"
-                                        />
-                                      </a>
-                                    </div>
-                                  </div>
-                                  <div class="col-md-8">
-                                    <div class="product-description">
-                                      <div class="product-groups">
-                                        <div class="product-title">
-                                          <a href="product-detail.html"
-                                            >Nulla et justo non augue</a
-                                          >
-                                          <span class="info-stock">
-                                            <i
-                                              class="fa fa-check-square-o"
-                                              aria-hidden="true"></i>
-                                            In Stock
-                                          </span>
-                                        </div>
-                                        <div class="rating">
-                                          <div class="star-content">
-                                            <div class="star"></div>
-                                            <div class="star"></div>
-                                            <div class="star"></div>
-                                            <div class="star"></div>
-                                            <div class="star"></div>
-                                          </div>
-                                        </div>
-                                        <div class="product-group-price">
-                                          <div
-                                            class="product-price-and-shipping"
-                                          >
-                                            <span class="price">£31.08</span>
-                                          </div>
-                                        </div>
-                                        <div class="discription">
-                                          Lorem ipsum dolor sit amet,
-                                          consectetur adipiscing elit. Etiam
-                                          ultricies eget velit vitae bibendum.
-                                          Cras condimentum libero a lectus
-                                          ultricies...
-                                        </div>
-                                      </div>
-                                      <div class="product-buttons d-flex">
-                                        <form
-                                          action="#"
-                                          method="post"
-                                          class="formAddToCart"
-                                        >
-                                          <a
-                                            class="add-to-cart"
-                                            href="#"
-                                            data-button-action="add-to-cart"
-                                          >
-                                            <i
-                                              class="fa fa-shopping-cart"
-                                              aria-hidden="true"></i>Add to cart
-                                          </a>
-                                        </form>
-                                        <a
-                                          class="addToWishlist"
-                                          href="#"
-                                          data-rel="1"
-                                          onclick=""
-                                        >
-                                          <i
-                                            class="fa fa-heart"
-                                            aria-hidden="true"></i>
-                                        </a>
-                                        <a
-                                          href="#"
-                                          class="quick-view hidden-sm-down"
-                                          data-link-action="quickview"
-                                        >
-                                          <i
-                                            class="fa fa-eye"
-                                            aria-hidden="true"></i>
-                                        </a>
-                                      </div>
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                            <div class="item col-md-12">
-                              <div
-                                class="product-miniature js-product-miniature item-one first-item"
-                              >
-                                <div class="row">
-                                  <div class="col-md-4">
-                                    <div class="thumbnail-container border">
-                                      <a href="product-detail.html">
-                                        <img
-                                          class="img-fluid image-cover"
-                                          src="img/product/3.jpg"
-                                          alt="img"
-                                        />
-                                        <img
-                                          class="img-fluid image-secondary"
-                                          src="img/product/14.jpg"
-                                          alt="img"
-                                        />
-                                      </a>
-                                    </div>
-                                  </div>
-                                  <div class="col-md-8">
-                                    <div class="product-description">
-                                      <div class="product-groups">
-                                        <div class="product-title">
-                                          <a href="product-detail.html"
-                                            >Nulla et justo non augue</a
-                                          >
-                                          <span class="info-stock">
-                                            <i
-                                              class="fa fa-check-square-o"
-                                              aria-hidden="true"></i>
-                                            In Stock
-                                          </span>
-                                        </div>
-                                        <div class="rating">
-                                          <div class="star-content">
-                                            <div class="star"></div>
-                                            <div class="star"></div>
-                                            <div class="star"></div>
-                                            <div class="star"></div>
-                                            <div class="star"></div>
-                                          </div>
-                                        </div>
-                                        <div class="product-group-price">
-                                          <div
-                                            class="product-price-and-shipping"
-                                          >
-                                            <span class="price">£20.08</span>
-                                          </div>
-                                        </div>
-                                        <div class="discription">
-                                          Lorem ipsum dolor sit amet,
-                                          consectetur adipiscing elit. Etiam
-                                          ultricies eget velit vitae bibendum.
-                                          Cras condimentum libero a lectus
-                                          ultricies...
-                                        </div>
-                                      </div>
-                                      <div class="product-buttons d-flex">
-                                        <form
-                                          action="#"
-                                          method="post"
-                                          class="formAddToCart"
-                                        >
-                                          <a
-                                            class="add-to-cart"
-                                            href="#"
-                                            data-button-action="add-to-cart"
-                                          >
-                                            <i
-                                              class="fa fa-shopping-cart"
-                                              aria-hidden="true"></i>Add to cart
-                                          </a>
-                                        </form>
-                                        <a
-                                          class="addToWishlist"
-                                          href="#"
-                                          data-rel="1"
-                                          onclick=""
-                                        >
-                                          <i
-                                            class="fa fa-heart"
-                                            aria-hidden="true"></i>
-                                        </a>
-                                        <a
-                                          href="#"
-                                          class="quick-view hidden-sm-down"
-                                          data-link-action="quickview"
-                                        >
-                                          <i
-                                            class="fa fa-eye"
-                                            aria-hidden="true"></i>
-                                        </a>
-                                      </div>
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                            <div class="item col-md-12">
-                              <div
-                                class="product-miniature js-product-miniature item-one first-item"
-                              >
-                                <div class="row">
-                                  <div class="col-md-4">
-                                    <div class="thumbnail-container border">
-                                      <a href="product-detail.html">
-                                        <img
-                                          class="img-fluid image-cover"
-                                          src="img/product/5.jpg"
-                                          alt="img"
-                                        />
-                                        <img
-                                          class="img-fluid image-secondary"
-                                          src="img/product/11.jpg"
-                                          alt="img"
-                                        />
-                                      </a>
-                                    </div>
-                                  </div>
-                                  <div class="col-md-8">
-                                    <div class="product-description">
-                                      <div class="product-groups">
-                                        <div class="product-title">
-                                          <a href="product-detail.html"
-                                            >Nulla et justo non augue</a
-                                          >
-                                          <span class="info-stock">
-                                            <i
-                                              class="fa fa-check-square-o"
-                                              aria-hidden="true"></i>
-                                            In Stock
-                                          </span>
-                                        </div>
-                                        <div class="rating">
-                                          <div class="star-content">
-                                            <div class="star"></div>
-                                            <div class="star"></div>
-                                            <div class="star"></div>
-                                            <div class="star"></div>
-                                            <div class="star"></div>
-                                          </div>
-                                        </div>
-                                        <div class="product-group-price">
-                                          <div
-                                            class="product-price-and-shipping"
-                                          >
-                                            <span class="price">£32.98</span>
-                                          </div>
-                                        </div>
-                                        <div class="discription">
-                                          Lorem ipsum dolor sit amet,
-                                          consectetur adipiscing elit. Etiam
-                                          ultricies eget velit vitae bibendum.
-                                          Cras condimentum libero a lectus
-                                          ultricies...
-                                        </div>
-                                      </div>
-                                      <div class="product-buttons d-flex">
-                                        <form
-                                          action="#"
-                                          method="post"
-                                          class="formAddToCart"
-                                        >
-                                          <a
-                                            class="add-to-cart"
-                                            href="#"
-                                            data-button-action="add-to-cart"
-                                          >
-                                            <i
-                                              class="fa fa-shopping-cart"
-                                              aria-hidden="true"></i>Add to cart
-                                          </a>
-                                        </form>
-                                        <a
-                                          class="addToWishlist"
-                                          href="#"
-                                          data-rel="1"
-                                          onclick=""
-                                        >
-                                          <i
-                                            class="fa fa-heart"
-                                            aria-hidden="true"></i>
-                                        </a>
-                                        <a
-                                          href="#"
-                                          class="quick-view hidden-sm-down"
-                                          data-link-action="quickview"
-                                        >
-                                          <i
-                                            class="fa fa-eye"
-                                            aria-hidden="true"></i>
-                                        </a>
-                                      </div>
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                            <div class="item col-md-12">
-                              <div
-                                class="product-miniature js-product-miniature item-one first-item"
-                              >
-                                <div class="row">
-                                  <div class="col-md-4">
-                                    <div class="thumbnail-container border">
-                                      <a href="product-detail.html">
-                                        <img
-                                          class="img-fluid image-cover"
-                                          src="img/product/8.jpg"
-                                          alt="img"
-                                        />
-                                        <img
-                                          class="img-fluid image-secondary"
-                                          src="img/product/14.jpg"
-                                          alt="img"
-                                        />
-                                      </a>
-                                    </div>
-                                  </div>
-                                  <div class="col-md-8">
-                                    <div class="product-description">
-                                      <div class="product-groups">
-                                        <div class="product-title">
-                                          <a href="product-detail.html"
-                                            >Nulla et justo non augue</a
-                                          >
-                                          <span class="info-stock">
-                                            <i
-                                              class="fa fa-check-square-o"
-                                              aria-hidden="true"></i>
-                                            In Stock
-                                          </span>
-                                        </div>
-                                        <div class="rating">
-                                          <div class="star-content">
-                                            <div class="star"></div>
-                                            <div class="star"></div>
-                                            <div class="star"></div>
-                                            <div class="star"></div>
-                                            <div class="star"></div>
-                                          </div>
-                                        </div>
-                                        <div class="product-group-price">
-                                          <div
-                                            class="product-price-and-shipping"
-                                          >
-                                            <span class="price">£34.54</span>
-                                          </div>
-                                        </div>
-                                        <div class="discription">
-                                          Lorem ipsum dolor sit amet,
-                                          consectetur adipiscing elit. Etiam
-                                          ultricies eget velit vitae bibendum.
-                                          Cras condimentum libero a lectus
-                                          ultricies...
-                                        </div>
-                                      </div>
-                                      <div class="product-buttons d-flex">
-                                        <form
-                                          action="#"
-                                          method="post"
-                                          class="formAddToCart"
-                                        >
-                                          <a
-                                            class="add-to-cart"
-                                            href="#"
-                                            data-button-action="add-to-cart"
-                                          >
-                                            <i
-                                              class="fa fa-shopping-cart"
-                                              aria-hidden="true"></i>Add to cart
-                                          </a>
-                                        </form>
-                                        <a
-                                          class="addToWishlist"
-                                          href="#"
-                                          data-rel="1"
-                                          onclick=""
-                                        >
-                                          <i
-                                            class="fa fa-heart"
-                                            aria-hidden="true"></i>
-                                        </a>
-                                        <a
-                                          href="#"
-                                          class="quick-view hidden-sm-down"
-                                          data-link-action="quickview"
-                                        >
-                                          <i
-                                            class="fa fa-eye"
-                                            aria-hidden="true"></i>
-                                        </a>
-                                      </div>
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                            <div class="item col-md-12">
-                              <div
-                                class="product-miniature js-product-miniature item-one first-item"
-                              >
-                                <div class="row">
-                                  <div class="col-md-4">
-                                    <div class="thumbnail-container border">
-                                      <a href="product-detail.html">
-                                        <img
-                                          class="img-fluid image-cover"
-                                          src="img/product/11.jpg"
-                                          alt="img"
-                                        />
-                                        <img
-                                          class="img-fluid image-secondary"
-                                          src="img/product/12.jpg"
-                                          alt="img"
-                                        />
-                                      </a>
-                                    </div>
-                                  </div>
-                                  <div class="col-md-8">
-                                    <div class="product-description">
-                                      <div class="product-groups">
-                                        <div class="product-title">
-                                          <a href="product-detail.html"
-                                            >Nulla et justo non augue</a
-                                          >
-                                          <span class="info-stock">
-                                            <i
-                                              class="fa fa-check-square-o"
-                                              aria-hidden="true"></i>
-                                            In Stock
-                                          </span>
-                                        </div>
-                                        <div class="rating">
-                                          <div class="star-content">
-                                            <div class="star"></div>
-                                            <div class="star"></div>
-                                            <div class="star"></div>
-                                            <div class="star"></div>
-                                            <div class="star"></div>
-                                          </div>
-                                        </div>
-                                        <div class="product-group-price">
-                                          <div
-                                            class="product-price-and-shipping"
-                                          >
-                                            <span class="price">£21.08</span>
-                                          </div>
-                                        </div>
-                                        <div class="discription">
-                                          Lorem ipsum dolor sit amet,
-                                          consectetur adipiscing elit. Etiam
-                                          ultricies eget velit vitae bibendum.
-                                          Cras condimentum libero a lectus
-                                          ultricies...
-                                        </div>
-                                      </div>
-                                      <div class="product-buttons d-flex">
-                                        <form
-                                          action="#"
-                                          method="post"
-                                          class="formAddToCart"
-                                        >
-                                          <a
-                                            class="add-to-cart"
-                                            href="#"
-                                            data-button-action="add-to-cart"
-                                          >
-                                            <i
-                                              class="fa fa-shopping-cart"
-                                              aria-hidden="true"></i>Add to cart
-                                          </a>
-                                        </form>
-                                        <a
-                                          class="addToWishlist"
-                                          href="#"
-                                          data-rel="1"
-                                          onclick=""
-                                        >
-                                          <i
-                                            class="fa fa-heart"
-                                            aria-hidden="true"></i>
-                                        </a>
-                                        <a
-                                          href="#"
-                                          class="quick-view hidden-sm-down"
-                                          data-link-action="quickview"
-                                        >
-                                          <i
-                                            class="fa fa-eye"
-                                            aria-hidden="true"></i>
-                                        </a>
-                                      </div>
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                            <div class="item col-md-12">
-                              <div
-                                class="product-miniature js-product-miniature item-one first-item"
-                              >
-                                <div class="row">
-                                  <div class="col-md-4">
-                                    <div class="thumbnail-container border">
-                                      <a href="product-detail.html">
-                                        <img
-                                          class="img-fluid image-cover"
-                                          src="img/product/13.jpg"
-                                          alt="img"
-                                        />
-                                        <img
-                                          class="img-fluid image-secondary"
-                                          src="img/product/23.jpg"
-                                          alt="img"
-                                        />
-                                      </a>
-                                    </div>
-                                  </div>
-                                  <div class="col-md-8">
-                                    <div class="product-description">
-                                      <div class="product-groups">
-                                        <div class="product-title">
-                                          <a href="product-detail.html"
-                                            >Nulla et justo non augue</a
-                                          >
-                                          <span class="info-stock">
-                                            <i
-                                              class="fa fa-check-square-o"
-                                              aria-hidden="true"></i>
-                                            In Stock
-                                          </span>
-                                        </div>
-                                        <div class="rating">
-                                          <div class="star-content">
-                                            <div class="star"></div>
-                                            <div class="star"></div>
-                                            <div class="star"></div>
-                                            <div class="star"></div>
-                                            <div class="star"></div>
-                                          </div>
-                                        </div>
-                                        <div class="product-group-price">
-                                          <div
-                                            class="product-price-and-shipping"
-                                          >
-                                            <span class="price">£36.08</span>
-                                          </div>
-                                        </div>
-                                        <div class="discription">
-                                          Lorem ipsum dolor sit amet,
-                                          consectetur adipiscing elit. Etiam
-                                          ultricies eget velit vitae bibendum.
-                                          Cras condimentum libero a lectus
-                                          ultricies...
-                                        </div>
-                                      </div>
-                                      <div class="product-buttons d-flex">
-                                        <form
-                                          action="#"
-                                          method="post"
-                                          class="formAddToCart"
-                                        >
-                                          <a
-                                            class="add-to-cart"
-                                            href="#"
-                                            data-button-action="add-to-cart"
-                                          >
-                                            <i
-                                              class="fa fa-shopping-cart"
-                                              aria-hidden="true"></i>Add to cart
-                                          </a>
-                                        </form>
-                                        <a
-                                          class="addToWishlist"
-                                          href="#"
-                                          data-rel="1"
-                                          onclick=""
-                                        >
-                                          <i
-                                            class="fa fa-heart"
-                                            aria-hidden="true"></i>
-                                        </a>
-                                        <a
-                                          href="#"
-                                          class="quick-view hidden-sm-down"
-                                          data-link-action="quickview"
-                                        >
-                                          <i
-                                            class="fa fa-eye"
-                                            aria-hidden="true"></i>
-                                        </a>
-                                      </div>
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                            <div class="item col-md-12">
-                              <div
-                                class="product-miniature js-product-miniature item-one first-item"
-                              >
-                                <div class="row">
-                                  <div class="col-md-4">
-                                    <div class="thumbnail-container border">
-                                      <a href="product-detail.html">
-                                        <img
-                                          class="img-fluid image-cover"
-                                          src="img/product/26.jpg"
-                                          alt="img"
-                                        />
-                                        <img
-                                          class="img-fluid image-secondary"
-                                          src="img/product/11.jpg"
-                                          alt="img"
-                                        />
-                                      </a>
-                                    </div>
-                                  </div>
-                                  <div class="col-md-8">
-                                    <div class="product-description">
-                                      <div class="product-groups">
-                                        <div class="product-title">
-                                          <a href="product-detail.html"
-                                            >Nulla et justo non augue</a
-                                          >
-                                          <span class="info-stock">
-                                            <i
-                                              class="fa fa-check-square-o"
-                                              aria-hidden="true"></i>
-                                            In Stock
-                                          </span>
-                                        </div>
-                                        <div class="rating">
-                                          <div class="star-content">
-                                            <div class="star"></div>
-                                            <div class="star"></div>
-                                            <div class="star"></div>
-                                            <div class="star"></div>
-                                            <div class="star"></div>
-                                          </div>
-                                        </div>
-                                        <div class="product-group-price">
-                                          <div
-                                            class="product-price-and-shipping"
-                                          >
-                                            <span class="price">£66.08</span>
-                                          </div>
-                                        </div>
-                                        <div class="discription">
-                                          Lorem ipsum dolor sit amet,
-                                          consectetur adipiscing elit. Etiam
-                                          ultricies eget velit vitae bibendum.
-                                          Cras condimentum libero a lectus
-                                          ultricies...
-                                        </div>
-                                      </div>
-                                      <div class="product-buttons d-flex">
-                                        <form
-                                          action="#"
-                                          method="post"
-                                          class="formAddToCart"
-                                        >
-                                          <a
-                                            class="add-to-cart"
-                                            href="#"
-                                            data-button-action="add-to-cart"
-                                          >
-                                            <i
-                                              class="fa fa-shopping-cart"
-                                              aria-hidden="true"></i>Add to cart
-                                          </a>
-                                        </form>
-                                        <a
-                                          class="addToWishlist"
-                                          href="#"
-                                          data-rel="1"
-                                          onclick=""
-                                        >
-                                          <i
-                                            class="fa fa-heart"
-                                            aria-hidden="true"></i>
-                                        </a>
-                                        <a
-                                          href="#"
-                                          class="quick-view hidden-sm-down"
-                                          data-link-action="quickview"
-                                        >
-                                          <i
-                                            class="fa fa-eye"
-                                            aria-hidden="true"></i>
-                                        </a>
-                                      </div>
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
+                                  );
+                                })
+                              ) : (
+                                <p class="col-12">
+                                  Товарів у цій категорії ще немає.
+                                </p>
+                              )
+                            }
                           </div>
                         </div>
                       </div>
