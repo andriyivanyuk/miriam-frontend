@@ -1,3 +1,7 @@
 .img-height {
   height: 260px;
 }
+
+.main-slider-image {
+  height: 310px !important;
+}
