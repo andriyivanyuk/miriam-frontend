@@ -233,26 +233,113 @@ try {
                                                 />
                                               </a>
                                             </form>
-                                            <a
-                                              class="addToWishlist"
-                                              href="#"
-                                              data-rel="1"
-                                            >
-                                              <i
-                                                class="fa fa-heart"
-                                                aria-hidden="true"
-                                              />
-                                            </a>
-                                            <a
-                                              href="#"
-                                              class="quick-view hidden-sm-down"
-                                              data-link-action="quickview"
-                                            >
-                                              <i
-                                                class="fa fa-eye"
-                                                aria-hidden="true"
-                                              />
-                                            </a>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  );
+                                })
+                              ) : (
+                                <p>Товарів у цій категорії ще немає.</p>
+                              )
+                            }
+                          </div>
+                        </div>
+
+                        <div id="list" class="related tab-pane fade">
+                          <div class="row">
+                            {
+                              products.length > 0 ? (
+                                products.map((product) => {
+                                  const komodType = product.product_type?.find(
+                                    (pt) =>
+                                      pt.__component === "product-types.komodi"
+                                  );
+                                  if (!komodType) return null;
+
+                                  const modelName =
+                                    komodType.model_name || "Без назви";
+                                  const basicPrice =
+                                    komodType.basic_price ?? "Ціна не вказана";
+                                  const imageCover =
+                                    komodType.images?.[0]?.formats?.medium
+                                      ?.url ||
+                                    komodType.images?.[0]?.url ||
+                                    null;
+                                  const imageSecondary =
+                                    komodType.images?.[1]?.formats?.medium
+                                      ?.url ||
+                                    komodType.images?.[1]?.url ||
+                                    imageCover;
+
+                                  return (
+                                    <div class="item col-md-12">
+                                      <div class="product-miniature item-one first-item">
+                                        <div class="row">
+                                          <div class="col-md-4">
+                                            <div class="thumbnail-container border">
+                                              <a href="#">
+                                                {imageCover && (
+                                                  <img
+                                                    class="img-fluid image-cover"
+                                                    src={imageCover}
+                                                    alt={modelName}
+                                                  />
+                                                )}
+                                                {imageSecondary && (
+                                                  <img
+                                                    class="img-fluid image-secondary"
+                                                    src={imageSecondary}
+                                                    alt={modelName}
+                                                  />
+                                                )}
+                                              </a>
+                                            </div>
+                                          </div>
+                                          <div class="col-md-8">
+                                            <div class="product-description">
+                                              <div class="product-groups">
+                                                <div class="product-title">
+                                                  <a href="#">{modelName}</a>
+                                                </div>
+                                                <div class="rating">
+                                                  <div class="star-content">
+                                                    <>
+                                                      <div class="star" />
+                                                      <div class="star" />
+                                                      <div class="star" />
+                                                      <div class="star" />
+                                                      <div class="star" />
+                                                    </>
+                                                  </div>
+                                                </div>
+                                                <div class="product-group-price">
+                                                  <div class="product-price-and-shipping">
+                                                    <span class="price">
+                                                      {basicPrice} грн
+                                                    </span>
+                                                  </div>
+                                                </div>
+                                              </div>
+                                              <div class="product-buttons d-flex justify-content-start">
+                                                <form
+                                                  action="#"
+                                                  method="post"
+                                                  class="formAddToCart"
+                                                >
+                                                  <a
+                                                    class="add-to-cart"
+                                                    href="#"
+                                                    data-button-action="add-to-cart"
+                                                  >
+                                                    <i
+                                                      class="fa fa-shopping-cart"
+                                                      aria-hidden="true"
+                                                    />
+                                                  </a>
+                                                </form>
+                                              </div>
+                                            </div>
                                           </div>
                                         </div>
                                       </div>
