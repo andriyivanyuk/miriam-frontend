@@ -5,6 +5,7 @@ import { Astro } from "astro";
 import Header from "../../components/Header.astro";
 
 const { slug } = Astro.params;
+const sort = Astro.url.searchParams.get("sort") ?? "";
 
 const apiUrl = `https://miriam-backend.onrender.com/api/menu-categories?filters[slug][$eq]=${slug}&populate[products][populate]=product_type.images`;
 
@@ -16,6 +17,15 @@ try {
   const json = await res.json();
   category = json.data?.[0];
   products = category?.products || [];
+
+  products.sort((a, b) => {
+    const aPrice = a.product_type?.[0]?.basic_price ?? 0;
+    const bPrice = b.product_type?.[0]?.basic_price ?? 0;
+
+    if (sort === "price_asc") return aPrice - bPrice;
+    if (sort === "price_desc") return bPrice - aPrice;
+    return 0;
+  });
 } catch (error) {
   console.error("Помилка при завантаженні категорії:", error);
 }
@@ -26,13 +36,10 @@ try {
     <meta charset="UTF-8" />
     <title>Категорія: {category?.name || slug}</title>
     <base href="/" />
-    <!-- Google Fonts -->
     <link
       href="https://fonts.googleapis.com/css?family=Poppins:400,500,600,700"
       rel="stylesheet"
     />
-
-    <!-- Vendor CSS -->
     <link rel="stylesheet" href="/libs/bootstrap/css/bootstrap.min.css" />
     <link rel="stylesheet" href="/libs/font-awesome/css/font-awesome.min.css" />
     <link rel="stylesheet" href="/libs/nivo-slider/css/nivo-slider.css" />
@@ -47,12 +54,11 @@ try {
       rel="stylesheet"
       href="/libs/owl-carousel/assets/owl.carousel.min.css"
     />
-
-    <!-- Template CSS -->
     <link rel="stylesheet" type="text/css" href="/css/style.css" />
     <link rel="stylesheet" type="text/css" href="/css/reponsive.css" />
     <link rel="stylesheet" type="text/css" href="/css/custom.css" />
   </head>
+
   <body id="product-sidebar-left" class="product-grid-sidebar-left">
     <Header />
 
@@ -61,20 +67,13 @@ try {
         <div id="content-wrapper" class="full-width">
           <div id="main">
             <div class="page-home">
-              <!-- breadcrumb -->
               <nav class="breadcrumb-bg">
                 <div class="container no-index">
                   <div class="breadcrumb">
                     <ol>
+                      <li><a href="/"><span>Головна</span></a></li>
                       <li>
-                        <a href="/">
-                          <span>Головна</span>
-                        </a>
-                      </li>
-                      <li>
-                        <a href="#">
-                          <span>{category?.name || slug}</span>
-                        </a>
+                        <a href="#"><span>{category?.name || slug}</span></a>
                       </li>
                     </ol>
                   </div>
@@ -106,7 +105,7 @@ try {
                               </li>
                             </ul>
                             <div class="hidden-sm-down total-products">
-                              <p>There are 12 products.</p>
+                              <p>Всього {products.length} виробів.</p>
                             </div>
                           </div>
                           <div class="col col-xs-12">
@@ -114,18 +113,29 @@ try {
                               class="d-flex sort-by-row justify-content-lg-end justify-content-md-end"
                             >
                               <div class="products-sort-order dropdown">
-                                <select class="select-title">
-                                  <option value="">Sort by</option>
-                                  <option value="">Name, A to Z</option>
-                                  <option value="">Name, Z to A</option>
-                                  <option value="">Price, low to high</option>
-                                  <option value="">Price, high to low</option>
+                                <select
+                                  class="select-title"
+                                  id="sortSelect"
+                                  onchange="location.href = `${location.pathname}?sort=${this.value}`"
+                                >
+                                  <option value="">Сортувати за ціною</option>
+                                  <option
+                                    value="price_asc"
+                                    selected={sort === "price_asc"}
+                                    >Від дешевих до дорогих</option
+                                  >
+                                  <option
+                                    value="price_desc"
+                                    selected={sort === "price_desc"}
+                                    >Від дорогих до дешевих</option
+                                  >
                                 </select>
                               </div>
                             </div>
                           </div>
                         </div>
                       </div>
+
                       <div class="tab-content product-items">
                         <div
                           id="grid"
@@ -137,22 +147,19 @@ try {
                                 products.map((product) => {
                                   const komodType = product.product_type?.find(
                                     (pt) =>
-                                      pt.__component === "product-types.komodi",
+                                      pt.__component === "product-types.komodi"
                                   );
-
                                   if (!komodType) return null;
 
                                   const modelName =
                                     komodType.model_name || "Без назви";
                                   const basicPrice =
                                     komodType.basic_price ?? "Ціна не вказана";
-
                                   const imageCover =
                                     komodType.images?.[0]?.formats?.medium
                                       ?.url ||
                                     komodType.images?.[0]?.url ||
                                     null;
-
                                   const imageSecondary =
                                     komodType.images?.[1]?.formats?.medium
                                       ?.url ||
@@ -187,11 +194,13 @@ try {
                                             </div>
                                             <div class="rating">
                                               <div class="star-content">
-                                                <div class="star" />
-                                                <div class="star" />
-                                                <div class="star" />
-                                                <div class="star" />
-                                                <div class="star" />
+                                                <>
+                                                  <div class="star" />
+                                                  <div class="star" />
+                                                  <div class="star" />
+                                                  <div class="star" />
+                                                  <div class="star" />
+                                                </>
                                               </div>
                                             </div>
                                             <div class="product-group-price">
@@ -256,151 +265,8 @@ try {
                             }
                           </div>
                         </div>
-                        <div id="list" class="related tab-pane fade">
-                          <div class="row">
-                            {
-                              products.length > 0 ? (
-                                products.map((product) => {
-                                  const komodType = product.product_type?.find(
-                                    (pt) =>
-                                      pt.__component === "product-types.komodi",
-                                  );
-
-                                  if (!komodType) return null;
-
-                                  const modelName =
-                                    komodType.model_name || "Без назви";
-                                  const basicPrice =
-                                    komodType.basic_price ?? "Ціна не вказана";
-
-                                  const imageCover =
-                                    komodType.images?.[0]?.formats?.medium
-                                      ?.url ||
-                                    komodType.images?.[0]?.url ||
-                                    null;
-
-                                  const imageSecondary =
-                                    komodType.images?.[1]?.formats?.medium
-                                      ?.url ||
-                                    komodType.images?.[1]?.url ||
-                                    imageCover;
-
-                                  return (
-                                    <div class="item col-md-12">
-                                      <div class="product-miniature js-product-miniature item-one first-item">
-                                        <div class="row">
-                                          <div class="col-md-4">
-                                            <div class="thumbnail-container border">
-                                              <a href="#" class="img-height">
-                                                {imageCover && (
-                                                  <img
-                                                    class="img-fluid image-cover"
-                                                    src={imageCover}
-                                                    alt={modelName}
-                                                  />
-                                                )}
-                                                {imageSecondary && (
-                                                  <img
-                                                    class="img-fluid image-secondary"
-                                                    src={imageSecondary}
-                                                    alt={modelName}
-                                                  />
-                                                )}
-                                              </a>
-                                            </div>
-                                          </div>
-                                          <div class="col-md-8">
-                                            <div class="product-description">
-                                              <div class="product-groups">
-                                                <div class="product-title">
-                                                  <a href="#">{modelName}</a>
-                                                  <span class="info-stock">
-                                                    <i
-                                                      class="fa fa-check-square-o"
-                                                      aria-hidden="true"
-                                                    />
-                                                    In Stock
-                                                  </span>
-                                                </div>
-                                                <div class="rating">
-                                                  <div class="star-content">
-                                                    <div class="star" />
-                                                    <div class="star" />
-                                                    <div class="star" />
-                                                    <div class="star" />
-                                                    <div class="star" />
-                                                  </div>
-                                                </div>
-                                                <div class="product-group-price">
-                                                  <div class="product-price-and-shipping">
-                                                    <span class="price">
-                                                      {basicPrice} грн
-                                                    </span>
-                                                  </div>
-                                                </div>
-                                                <div class="discription">
-                                                  Опис товару тимчасово
-                                                  відсутній...
-                                                </div>
-                                              </div>
-                                              <div class="product-buttons d-flex">
-                                                <form
-                                                  action="#"
-                                                  method="post"
-                                                  class="formAddToCart"
-                                                >
-                                                  <a
-                                                    class="add-to-cart"
-                                                    href="#"
-                                                    data-button-action="add-to-cart"
-                                                  >
-                                                    <i
-                                                      class="fa fa-shopping-cart"
-                                                      aria-hidden="true"
-                                                    />
-                                                    Add to cart
-                                                  </a>
-                                                </form>
-                                                <a
-                                                  class="addToWishlist"
-                                                  href="#"
-                                                  data-rel="1"
-                                                >
-                                                  <i
-                                                    class="fa fa-heart"
-                                                    aria-hidden="true"
-                                                  />
-                                                </a>
-                                                <a
-                                                  href="#"
-                                                  class="quick-view hidden-sm-down"
-                                                  data-link-action="quickview"
-                                                >
-                                                  <i
-                                                    class="fa fa-eye"
-                                                    aria-hidden="true"
-                                                  />
-                                                </a>
-                                              </div>
-                                            </div>
-                                          </div>
-                                        </div>
-                                      </div>
-                                    </div>
-                                  );
-                                })
-                              ) : (
-                                <p class="col-12">
-                                  Товарів у цій категорії ще немає.
-                                </p>
-                              )
-                            }
-                          </div>
-                        </div>
                       </div>
                     </div>
-
-                    <!-- end col-md-9-1 -->
                   </div>
                 </div>
               </div>
@@ -412,7 +278,6 @@ try {
 
     <!-- Vendor JS -->
     <script src="/libs/jquery/jquery.min.js" is:inline></script>
-
     <script src="/libs/popper/popper.min.js" is:inline></script>
     <script src="/libs/bootstrap/js/bootstrap.min.js" is:inline></script>
     <script src="/libs/nivo-slider/js/jquery.nivo.slider.js" is:inline></script>
@@ -425,5 +290,6 @@ try {
 
     <!-- Template JS -->
     <script src="/js/theme.js" is:inline></script>
+    <script src="/js/toggleView.js" is:inline></script>
   </body>
 </html>
