@@ -97,8 +97,12 @@ function getImgUrl(img) {
                 <div class="container no-index">
                   <div class="breadcrumb">
                     <ol>
-                      <li><a href="/"><span>Головна</span></a></li>
-                      <li><a><span>{productType?.model_name}</span></a></li>
+                      <li>
+                        <a href="/"><span>Головна</span></a>
+                      </li>
+                      <li>
+                        <a><span>{productType?.model_name}</span></a>
+                      </li>
                     </ol>
                   </div>
                 </div>
@@ -126,12 +130,16 @@ function getImgUrl(img) {
                                         <i class="fa fa-expand" />
                                       </div>
                                     </div>
-
                                     {images.length > 1 && (
                                       <ul class="product-tab nav nav-tabs d-flex">
                                         {images.map((img, i) => (
                                           <li class={`${i === 0 ? "active" : ""} col`}>
-                                            <a href={`#item${i + 1}`} data-toggle="tab" aria-expanded={i === 0 ? "true" : undefined} class={i === 0 ? "active show" : undefined}>
+                                            <a
+                                              href={`#item${i + 1}`}
+                                              data-toggle="tab"
+                                              aria-expanded={i === 0 ? "true" : undefined}
+                                              class={i === 0 ? "active show" : undefined}
+                                            >
                                               <img src={getImgUrl(img)} alt={img?.alt || "img"} />
                                             </a>
                                           </li>
@@ -158,7 +166,11 @@ function getImgUrl(img) {
                                                   <ul class="product-tab nav nav-tabs">
                                                     {images.map((img, i) => (
                                                       <li class={i === 0 ? "active" : ""}>
-                                                        <a href={`#modal-item${i + 1}`} data-toggle="tab" class={i === 0 ? "active show" : undefined}>
+                                                        <a
+                                                          href={`#modal-item${i + 1}`}
+                                                          data-toggle="tab"
+                                                          class={i === 0 ? "active show" : undefined}
+                                                        >
                                                           <img src={getImgUrl(img)} alt={img?.alt || "img"} />
                                                         </a>
                                                       </li>
@@ -199,21 +211,30 @@ function getImgUrl(img) {
                                       <strong>Ширина</strong>
                                       <div class="grid">
                                         {widths.map(w => (
-                                          <a href={getUpdatedUrl('width', w)} class={`cube ${selectedWidth === w ? 'active' : ''} ${isOptionDisabled('width', w) ? 'disabled' : ''}`}>{w}</a>
+                                          <a
+                                            href={getUpdatedUrl('width', w)}
+                                            class={`cube ${selectedWidth === w ? 'active' : ''} ${isOptionDisabled('width', w) ? 'disabled' : ''}`}
+                                          >{w}</a>
                                         ))}
                                       </div>
 
                                       <strong>Висота</strong>
                                       <div class="grid">
                                         {heights.map(h => (
-                                          <a href={getUpdatedUrl('height', h)} class={`cube ${selectedHeight === h ? 'active' : ''} ${isOptionDisabled('height', h) ? 'disabled' : ''}`}>{h}</a>
+                                          <a
+                                            href={getUpdatedUrl('height', h)}
+                                            class={`cube ${selectedHeight === h ? 'active' : ''} ${isOptionDisabled('height', h) ? 'disabled' : ''}`}
+                                          >{h}</a>
                                         ))}
                                       </div>
 
                                       <strong>Глибина</strong>
                                       <div class="grid">
                                         {depths.map(d => (
-                                          <a href={getUpdatedUrl('depth', d)} class={`cube ${selectedDepth === d ? 'active' : ''} ${isOptionDisabled('depth', d) ? 'disabled' : ''}`}>{d}</a>
+                                          <a
+                                            href={getUpdatedUrl('depth', d)}
+                                            class={`cube ${selectedDepth === d ? 'active' : ''} ${isOptionDisabled('depth', d) ? 'disabled' : ''}`}
+                                          >{d}</a>
                                         ))}
                                       </div>
                                     </div>
@@ -241,6 +262,56 @@ function getImgUrl(img) {
                                     </div>
                                   )}
 
+                                  {productType?.front_materials?.length > 0 && (
+                                    <div class="option has-border mt-4">
+                                      <h5 class="text-danger">Колір фасадів</h5>
+                                      <div class="row">
+                                        {productType.front_materials.map((item) => (
+                                          <div class="col-3 col-sm-2 text-center mb-4">
+                                            {item.img?.url ? (
+                                              <div class="color-box">
+                                                <img src={getImgUrl(item.img)} alt={item.title} class="img-fluid border" />
+                                              </div>
+                                            ) : (
+                                              <div class="color-box border d-flex align-items-center justify-content-center" style="height:100px;background:#f8f8f8">
+                                                <span class="text-muted small">—</span>
+                                              </div>
+                                            )}
+                                            <div class="mt-1 small">{item.title}</div>
+                                          </div>
+                                        ))}
+                                      </div>
+                                    </div>
+                                  )}
+
+                                  <div class="has-border cart-area">
+                                    <div class="product-quantity">
+                                      <div class="qty">
+                                        <div class="input-group">
+                                          <div class="quantity">
+                                            <span class="control-label">Кількість : </span>
+                                            <input type="text" name="qty" id="quantity_wanted" value="1" class="input-group form-control" />
+                                            <span class="input-group-btn-vertical">
+                                              <button class="btn btn-touchspin js-touchspin bootstrap-touchspin-up" type="button">
+                                                +
+                                              </button>
+                                              <button class="btn btn-touchspin js-touchspin bootstrap-touchspin-down" type="button">
+                                                -
+                                              </button>
+                                            </span>
+                                          </div>
+                                          <span class="add">
+                                            <button class="btn btn-primary add-to-cart add-item" data-button-action="add-to-cart" type="submit">
+                                              <i class="fa fa-shopping-cart" aria-hidden="true"></i>
+                                              <span>До кошика</span>
+                                            </button>
+                                          </span>
+                                        </div>
+                                      </div>
+                                    </div>
+                                    <div class="clearfix"></div>
+                                    <p class="product-minimal-quantity"></p>
+                                  </div>
                                 </div>
                               </div>
                             </div>
