@@ -3,7 +3,8 @@ import Header from "../../components/Header.astro";
 import Footer from "../../components/Footer.astro";
 
 const productId = Astro.params.id;
-const apiUrl = `https://miriam-backend.onrender.com/api/products/${productId}?populate[product_type][populate]=*`;
+
+const apiUrl = `https://miriam-backend.onrender.com/api/products/${productId}?populate[product_type][on][product-types.komodi][populate][0]=body_material.img&populate[product_type][on][product-types.komodi][populate][1]=front_materials.img&populate[product_type][on][product-types.komodi][populate][2]=images&populate[product_type][on][product-types.komodi][populate][3]=size_option`;
 
 const search = Astro.url.searchParams;
 const selectedWidth = Number(search.get("width")) || null;
@@ -11,8 +12,8 @@ const selectedHeight = Number(search.get("height")) || null;
 const selectedDepth = Number(search.get("depth")) || null;
 
 let product = null;
-let images = [];
 let productType = null;
+let images = [];
 
 try {
   const res = await fetch(apiUrl);
@@ -72,7 +73,6 @@ function getImgUrl(img) {
     <meta charset="UTF-8" />
     <title>{productType?.model_name ?? "Деталі товару"}</title>
     <base href="/" />
-
     <link href="https://fonts.googleapis.com/css?family=Poppins:400,500,600,700" rel="stylesheet" />
     <link rel="stylesheet" href="/libs/bootstrap/css/bootstrap.min.css" />
     <link rel="stylesheet" href="/libs/font-awesome/css/font-awesome.min.css" />
@@ -82,10 +82,9 @@ function getImgUrl(img) {
     <link rel="stylesheet" href="/libs/font-material/css/material-design-iconic-font.min.css" />
     <link rel="stylesheet" href="/libs/slider-range/css/jslider.css" />
     <link rel="stylesheet" href="/libs/owl-carousel/assets/owl.carousel.min.css" />
-    <link rel="stylesheet" type="text/css" href="/css/style.css" />
-    <link rel="stylesheet" type="text/css" href="/css/reponsive.css" />
-    <link rel="stylesheet" type="text/css" href="/css/custom.css" />
-
+    <link rel="stylesheet" href="/css/style.css" />
+    <link rel="stylesheet" href="/css/reponsive.css" />
+    <link rel="stylesheet" href="/css/custom.css" />
   </head>
   <body id="product-detail">
     <Header />
@@ -180,7 +179,13 @@ function getImgUrl(img) {
                               <div class="product-info col-xs-12 col-md-7 col-sm-7">
                                 <div class="detail-description">
                                   <div class="price-del">
-                                    <span class="price">₴{productType?.basic_price}</span>
+                                    {
+                                      matched ? (
+                                        <span class="price">₴{matched.price}</span>
+                                      ) : (
+                                        <span class="price">₴{productType?.basic_price}</span>
+                                      )
+                                    }
                                     <span class="float-right">
                                       <span class="availb">Наявність: </span>
                                       <span class="check"><i class="fa fa-check-square-o" /> На складі</span>
@@ -190,6 +195,7 @@ function getImgUrl(img) {
                                   <div class="option has-border d-lg-flex size-color">
                                     <div>
                                       <h6>Оберіть розміри:</h6>
+                                      <small class="text-muted d-block mb-3">Натисніть ще раз, щоб скасувати вибір</small>
                                       <strong>Ширина</strong>
                                       <div class="grid">
                                         {widths.map(w => (
@@ -210,25 +216,40 @@ function getImgUrl(img) {
                                           <a href={getUpdatedUrl('depth', d)} class={`cube ${selectedDepth === d ? 'active' : ''} ${isOptionDisabled('depth', d) ? 'disabled' : ''}`}>{d}</a>
                                         ))}
                                       </div>
-
-                                      <div style="margin-top: 1rem;">
-                                        {matched ? (
-                                          <p><strong>Ціна обраної конфігурації:</strong> {matched.price} грн</p>
-                                        ) : (
-                                          <p><em>Такої комбінації не існує</em></p>
-                                        )}
-                                      </div>
                                     </div>
                                   </div>
 
-                                  <div class="has-border cart-area">test</div>
+                                  {productType?.body_material?.length > 0 && (
+                                    <div class="option has-border mt-4">
+                                      <h5 class="text-danger">Колір корпусу</h5>
+                                      <div class="row">
+                                        {productType.body_material.map((item) => (
+                                          <div class="col-3 col-sm-2 text-center mb-4">
+                                            {item.img?.url ? (
+                                              <div class="color-box">
+                                                <img src={getImgUrl(item.img)} alt={item.title} class="img-fluid border" />
+                                              </div>
+                                            ) : (
+                                              <div class="color-box border d-flex align-items-center justify-content-center" style="height:100px;background:#f8f8f8">
+                                                <span class="text-muted small">—</span>
+                                              </div>
+                                            )}
+                                            <div class="mt-1 small">{item.title}</div>
+                                          </div>
+                                        ))}
+                                      </div>
+                                    </div>
+                                  )}
+
                                 </div>
                               </div>
                             </div>
 
                             <div class="review">
                               <ul class="nav nav-tabs">
-                                <li class="active"><a data-toggle="tab" href="#description" class="active show">Опис</a></li>
+                                <li class="active">
+                                  <a data-toggle="tab" href="#description" class="active show">Опис</a>
+                                </li>
                               </ul>
                               <div class="tab-content">
                                 <div id="description" class="tab-pane fade in active show">
@@ -251,7 +272,6 @@ function getImgUrl(img) {
       </div>
     </div>
     <Footer />
-
     <script src="/libs/jquery/jquery.min.js" is:inline></script>
     <script src="/libs/popper/popper.min.js" is:inline></script>
     <script src="/libs/bootstrap/js/bootstrap.min.js" is:inline></script>
