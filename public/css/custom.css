@@ -5,3 +5,28 @@
 .main-slider-image {
   /* height: 310px !important; */
 }
+.grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 10px;
+}
+.cube {
+  padding: 8px 16px;
+  border: 2px solid #ccc;
+  border-radius: 4px;
+  cursor: pointer;
+  text-align: center;
+  text-decoration: none;
+  color: black;
+}
+.cube.active {
+  border-color: green;
+  font-weight: bold;
+}
+.cube.disabled {
+  border-color: #eee;
+  color: #aaa;
+  pointer-events: none;
+  cursor: not-allowed;
+}
