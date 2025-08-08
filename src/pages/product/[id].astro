@@ -7,9 +7,9 @@ const productId = Astro.params.id;
 const apiUrl = `https://miriam-backend.onrender.com/api/products/${productId}?populate[product_type][on][product-types.komodi][populate][0]=body_material.img&populate[product_type][on][product-types.komodi][populate][1]=front_materials.img&populate[product_type][on][product-types.komodi][populate][2]=images&populate[product_type][on][product-types.komodi][populate][3]=size_option`;
 
 const search = Astro.url.searchParams;
-const selectedWidth = Number(search.get("width")) || null;
+const selectedWidth  = Number(search.get("width"))  || null;
 const selectedHeight = Number(search.get("height")) || null;
-const selectedDepth = Number(search.get("depth")) || null;
+const selectedDepth  = Number(search.get("depth"))  || null;
 
 let product = null;
 let productType = null;
@@ -25,54 +25,83 @@ try {
   console.error("Помилка при завантаженні продукту:", error);
 }
 
+function getImgUrl(img) {
+  if (!img?.url) return "";
+  return img.url.startsWith("http") ? img.url : `https://miriam-backend.onrender.com${img.url}`;
+}
+
 const allOptions = productType?.size_option || [];
+const uniq = (arr) => Array.from(new Set(arr)).sort((a,b)=>a-b);
+const widths  = uniq(allOptions.map(o => o.width));
+const heights = uniq(allOptions.map(o => o.height));
+const depths  = uniq(allOptions.map(o => o.depth));
 
-const widths = [...new Set(allOptions.map(o => o.width))];
-const heights = [...new Set(allOptions.map(o => o.height))];
-const depths = [...new Set(allOptions.map(o => o.depth))];
-
-const validOptions = allOptions.filter(option => {
-  return (!selectedWidth || option.width === selectedWidth) &&
-         (!selectedHeight || option.height === selectedHeight) &&
-         (!selectedDepth || option.depth === selectedDepth);
-});
-
+const validOptions = allOptions.filter(o =>
+  (!selectedWidth  || o.width  === selectedWidth) &&
+  (!selectedHeight || o.height === selectedHeight) &&
+  (!selectedDepth  || o.depth  === selectedDepth)
+);
 const matched = validOptions.length === 1 ? validOptions[0] : null;
 
 const isOptionDisabled = (param, value) => {
-  return !allOptions.some(option => {
-    const matchWidth = param === "width" ? option[param] === value : !selectedWidth || option.width === selectedWidth;
-    const matchHeight = param === "height" ? option[param] === value : !selectedHeight || option.height === selectedHeight;
-    const matchDepth = param === "depth" ? option[param] === value : !selectedDepth || option.depth === selectedDepth;
-    return matchWidth && matchHeight && matchDepth;
+  return !allOptions.some(o => {
+    const mw = param === "width"  ? o[param] === value : (!selectedWidth  || o.width  === selectedWidth);
+    const mh = param === "height" ? o[param] === value : (!selectedHeight || o.height === selectedHeight);
+    const md = param === "depth"  ? o[param] === value : (!selectedDepth  || o.depth  === selectedDepth);
+    return mw && mh && md;
   });
 };
 
 const baseUrl = Astro.url.pathname;
-
 const getUpdatedUrl = (param, value) => {
   const params = new URLSearchParams(search);
-  if (Number(params.get(param)) === value) {
-    params.delete(param);
-  } else {
-    params.set(param, value);
-  }
-  return `${baseUrl}?${params.toString()}`;
+  if (Number(params.get(param)) === value) params.delete(param);
+  else params.set(param, value);
+  return `${baseUrl}?${params.toString()}#configurator`;
 };
 
-function getImgUrl(img) {
-  if (!img?.url) return "";
-  return img.url.startsWith("http")
-    ? img.url
-    : `https://miriam-backend.onrender.com${img.url}`;
-}
+// кольори
+const selectedBodyId  = Number(search.get("body"))  || null;
+const selectedFrontId = Number(search.get("front")) || null;
 
+const bodyList  = productType?.body_material  ?? [];
+const frontList = productType?.front_materials ?? [];
+
+const selectedBody  = bodyList.find(m => m.id === selectedBodyId)   ?? null;
+const selectedFront = frontList.find(m => m.id === selectedFrontId) ?? null;
+
+// qty/ціни
 const qty = Math.max(1, Number(search.get("qty")) || 1);
+const unitPrice  = matched ? matched.price : (productType?.basic_price || 0);
+const totalPrice = unitPrice * qty;
 
-const totalPrice = matched
-  ? matched.price * qty
-  : (productType?.basic_price || 0) * qty;
+// стартовий payload
+const selection = {
+  productId,
+  model_name: productType?.model_name ?? null,
+  qty,
+  size: matched
+    ? { id: matched.id, width: matched.width, height: matched.height, depth: matched.depth, price: matched.price }
+    : (selectedWidth || selectedHeight || selectedDepth ? { width: selectedWidth, height: selectedHeight, depth: selectedDepth, price: null } : null),
+  body_material:  selectedBody  ? { id: selectedBody.id,  title: selectedBody.title,  img: getImgUrl(selectedBody.img) } : null,
+  front_material: selectedFront ? { id: selectedFront.id, title: selectedFront.title, img: getImgUrl(selectedFront.img) } : null,
+  base_price: productType?.basic_price ?? 0,
+  unit_price: unitPrice,
+  total_price: totalPrice,
+  isComplete: !!(matched && selectedBody && selectedFront)
+};
+const selectionJson = JSON.stringify(selection);
 
+const rawClientData = {
+  productId,
+  model_name: productType?.model_name ?? null,
+  base_price: productType?.basic_price ?? 0,
+  options: allOptions,
+  body:  bodyList.map(b => ({ id: b.id, title: b.title, img: getImgUrl(b.img) })),
+  front: frontList.map(f => ({ id: f.id, title: f.title, img: getImgUrl(f.img) })),
+};
+const clientDataSafe = JSON.stringify(rawClientData)
+  .replace(/</g,'\\u003c').replace(/\u2028/g,'\\u2028').replace(/\u2029/g,'\\u2029');
 ---
 
 <html lang="uk">
@@ -104,12 +133,8 @@ const totalPrice = matched
                 <div class="container no-index">
                   <div class="breadcrumb">
                     <ol>
-                      <li>
-                        <a href="/"><span>Головна</span></a>
-                      </li>
-                      <li>
-                        <a><span>{productType?.model_name}</span></a>
-                      </li>
+                      <li><a href="/"><span>Головна</span></a></li>
+                      <li><a><span>{productType?.model_name}</span></a></li>
                     </ol>
                   </div>
                 </div>
@@ -117,231 +142,204 @@ const totalPrice = matched
 
               <div class="container">
                 <div class="content">
-                  {
-                    product ? (
-                      <div class="row">
-                        <div class="col-sm-12 col-lg-12 col-md-12">
-                          <div class="main-product-detail">
-                            <h2>{productType?.model_name}</h2>
-                            <div class="product-single row">
-                              <div class="product-detail col-xs-12 col-md-5 col-sm-5">
-                                <div class="page-content" id="content">
-                                  <div class="images-container">
-                                    <div class="js-qv-mask mask tab-content border">
-                                      {images.map((img, i) => (
-                                        <div id={`item${i + 1}`} class={`tab-pane fade${i === 0 ? " active in show" : ""}`}>
-                                          <img class="main-slider-image" src={getImgUrl(img)} alt={img?.alt || "img"} />
-                                        </div>
-                                      ))}
-                                      <div class="layer hidden-sm-down" data-toggle="modal" data-target="#product-modal">
-                                        <i class="fa fa-expand" />
+                  {product ? (
+                    <div class="row">
+                      <div class="col-sm-12 col-lg-12 col-md-12">
+                        <div class="main-product-detail">
+                          <h2>{productType?.model_name}</h2>
+                          <div class="product-single row">
+                            <div class="product-detail col-xs-12 col-md-5 col-sm-5">
+                              <div class="page-content" id="content">
+                                <div class="images-container">
+                                  <div class="js-qv-mask mask tab-content border">
+                                    {images.map((img, i) => (
+                                      <div id={`item${i + 1}`} class={`tab-pane fade${i === 0 ? " active in show" : ""}`}>
+                                        <img class="main-slider-image img-fluid" src={getImgUrl(img)} alt={img?.alt || "img"} />
                                       </div>
+                                    ))}
+                                    <div class="layer hidden-sm-down" data-toggle="modal" data-target="#product-modal">
+                                      <i class="fa fa-expand" />
                                     </div>
-                                    {images.length > 1 && (
-                                      <ul class="product-tab nav nav-tabs d-flex">
-                                        {images.map((img, i) => (
-                                          <li class={`${i === 0 ? "active" : ""} col`}>
-                                            <a
-                                              href={`#item${i + 1}`}
-                                              data-toggle="tab"
-                                              aria-expanded={i === 0 ? "true" : undefined}
-                                              class={i === 0 ? "active show" : undefined}
-                                            >
-                                              <img src={getImgUrl(img)} alt={img?.alt || "img"} />
-                                            </a>
-                                          </li>
-                                        ))}
-                                      </ul>
-                                    )}
+                                  </div>
+                                  {images.length > 1 && (
+                                    <ul class="product-tab nav nav-tabs d-flex">
+                                      {images.map((img, i) => (
+                                        <li class={`${i === 0 ? "active" : ""} col`}>
+                                          <a href={`#item${i + 1}`} data-toggle="tab" class={i === 0 ? "active show" : undefined}>
+                                            <img src={getImgUrl(img)} alt={img?.alt || "img"} />
+                                          </a>
+                                        </li>
+                                      ))}
+                                    </ul>
+                                  )}
 
-                                    <!-- MODAL -->
-                                    <div class="modal fade" id="product-modal" role="dialog">
-                                      <div class="modal-dialog">
-                                        <div class="modal-content">
-                                          <div class="modal-header"></div>
-                                          <div class="modal-body">
-                                            <div class="product-detail">
-                                              <div class="images-container">
-                                                <div class="js-qv-mask mask tab-content">
-                                                  {images.map((img, i) => (
-                                                    <div id={`modal-item${i + 1}`} class={`tab-pane fade${i === 0 ? " active in show" : ""}`}>
-                                                      <img src={getImgUrl(img)} alt={img?.alt || "img"} />
-                                                    </div>
-                                                  ))}
-                                                </div>
-                                                {images.length > 1 && (
-                                                  <ul class="product-tab nav nav-tabs">
-                                                    {images.map((img, i) => (
-                                                      <li class={i === 0 ? "active" : ""}>
-                                                        <a
-                                                          href={`#modal-item${i + 1}`}
-                                                          data-toggle="tab"
-                                                          class={i === 0 ? "active show" : undefined}
-                                                        >
-                                                          <img src={getImgUrl(img)} alt={img?.alt || "img"} />
-                                                        </a>
-                                                      </li>
-                                                    ))}
-                                                  </ul>
-                                                )}
+                                  <!-- MODAL -->
+                                  <div class="modal fade" id="product-modal" role="dialog">
+                                    <div class="modal-dialog">
+                                      <div class="modal-content">
+                                        <div class="modal-header"></div>
+                                        <div class="modal-body">
+                                          <div class="product-detail">
+                                            <div class="images-container">
+                                              <div class="js-qv-mask mask tab-content">
+                                                {images.map((img, i) => (
+                                                  <div id={`modal-item${i + 1}`} class={`tab-pane fade${i === 0 ? " active in show" : ""}`}>
+                                                    <img src={getImgUrl(img)} alt={img?.alt || "img"} />
+                                                  </div>
+                                                ))}
                                               </div>
+                                              {images.length > 1 && (
+                                                <ul class="product-tab nav nav-tabs">
+                                                  {images.map((img, i) => (
+                                                    <li class={i === 0 ? "active" : ""}>
+                                                      <a href={`#modal-item${i + 1}`} data-toggle="tab" class={i === 0 ? "active show" : undefined}>
+                                                        <img src={getImgUrl(img)} alt={img?.alt || "img"} />
+                                                      </a>
+                                                    </li>
+                                                  ))}
+                                                </ul>
+                                              )}
                                             </div>
                                           </div>
                                         </div>
                                       </div>
                                     </div>
-                                    <!-- /MODAL -->
                                   </div>
-                                </div>
-                              </div>
-
-                              <div class="product-info col-xs-12 col-md-7 col-sm-7">
-                                <div class="detail-description">
-                                  <div class="price-del">
-                                    {
-                                      matched ? (
-                                        <span class="price">₴{matched.price}</span>
-                                      ) : (
-                                        <span class="price">₴{productType?.basic_price}</span>
-                                      )
-                                    }
-                                    <span class="float-right">
-                                      <span class="availb">Наявність: </span>
-                                      <span class="check"><i class="fa fa-check-square-o" /> На складі</span>
-                                    </span>
-                                  </div>
-
-                                  <div class="option has-border d-lg-flex size-color">
-                                    <div>
-                                      <h6>Оберіть розміри:</h6>
-                                      <small class="text-muted d-block mb-3">Натисніть ще раз, щоб скасувати вибір</small>
-                                      <strong>Ширина</strong>
-                                      <div class="grid">
-                                        {widths.map(w => (
-                                          <a
-                                            href={getUpdatedUrl('width', w)}
-                                            class={`cube ${selectedWidth === w ? 'active' : ''} ${isOptionDisabled('width', w) ? 'disabled' : ''}`}
-                                          >{w}</a>
-                                        ))}
-                                      </div>
-
-                                      <strong>Висота</strong>
-                                      <div class="grid">
-                                        {heights.map(h => (
-                                          <a
-                                            href={getUpdatedUrl('height', h)}
-                                            class={`cube ${selectedHeight === h ? 'active' : ''} ${isOptionDisabled('height', h) ? 'disabled' : ''}`}
-                                          >{h}</a>
-                                        ))}
-                                      </div>
-
-                                      <strong>Глибина</strong>
-                                      <div class="grid">
-                                        {depths.map(d => (
-                                          <a
-                                            href={getUpdatedUrl('depth', d)}
-                                            class={`cube ${selectedDepth === d ? 'active' : ''} ${isOptionDisabled('depth', d) ? 'disabled' : ''}`}
-                                          >{d}</a>
-                                        ))}
-                                      </div>
-                                    </div>
-                                  </div>
-
-                                  {productType?.body_material?.length > 0 && (
-                                    <div class="option has-border mt-4">
-                                      <h5 class="text-danger">Колір корпусу</h5>
-                                      <div class="row">
-                                        {productType.body_material.map((item) => (
-                                          <div class="col-3 col-sm-2 text-center mb-4">
-                                            {item.img?.url ? (
-                                              <div class="color-box">
-                                                <img src={getImgUrl(item.img)} alt={item.title} class="img-fluid border" />
-                                              </div>
-                                            ) : (
-                                              <div class="color-box border d-flex align-items-center justify-content-center" style="height:100px;background:#f8f8f8">
-                                                <span class="text-muted small">—</span>
-                                              </div>
-                                            )}
-                                            <div class="mt-1 small">{item.title}</div>
-                                          </div>
-                                        ))}
-                                      </div>
-                                    </div>
-                                  )}
-
-                                  {productType?.front_materials?.length > 0 && (
-                                    <div class="option has-border mt-4">
-                                      <h5 class="text-danger">Колір фасадів</h5>
-                                      <div class="row">
-                                        {productType.front_materials.map((item) => (
-                                          <div class="col-3 col-sm-2 text-center mb-4">
-                                            {item.img?.url ? (
-                                              <div class="color-box">
-                                                <img src={getImgUrl(item.img)} alt={item.title} class="img-fluid border" />
-                                              </div>
-                                            ) : (
-                                              <div class="color-box border d-flex align-items-center justify-content-center" style="height:100px;background:#f8f8f8">
-                                                <span class="text-muted small">—</span>
-                                              </div>
-                                            )}
-                                            <div class="mt-1 small">{item.title}</div>
-                                          </div>
-                                        ))}
-                                      </div>
-                                    </div>
-                                  )}
-
-                                  <div class="has-border cart-area">
-                                    <div class="product-quantity">
-                                      <div class="qty">
-                                        <div class="input-group">
-                                          <div class="quantity">
-                                            <span class="control-label">Кількість : </span>
-                                            <input type="text" name="qty" id="quantity_wanted" value="1" class="input-group form-control" />
-                                            <span class="input-group-btn-vertical">
-                                              <button class="btn btn-touchspin js-touchspin bootstrap-touchspin-up" type="button">
-                                                +
-                                              </button>
-                                              <button class="btn btn-touchspin js-touchspin bootstrap-touchspin-down" type="button">
-                                                -
-                                              </button>
-                                            </span>
-                                          </div>
-                                          <span class="add">
-                                            <button class="btn btn-primary add-to-cart add-item" data-button-action="add-to-cart" type="submit">
-                                              <i class="fa fa-shopping-cart" aria-hidden="true"></i>
-                                              <span>До кошика</span>
-                                            </button>
-                                          </span>
-                                        </div>
-                                      </div>
-                                    </div>
-                                    <div class="clearfix"></div>
-                                    <p class="product-minimal-quantity"></p>
-                                  </div>
+                                  <!-- /MODAL -->
                                 </div>
                               </div>
                             </div>
 
-                            <div class="review">
-                              <ul class="nav nav-tabs">
-                                <li class="active">
-                                  <a data-toggle="tab" href="#description" class="active show">Опис</a>
-                                </li>
-                              </ul>
-                              <div class="tab-content">
-                                <div id="description" class="tab-pane fade in active show">
-                                  <p>{productType?.furniture_description}</p>
+                            <div class="product-info col-xs-12 col-md-7 col-sm-7">
+                              <div class="detail-description" id="configurator">
+                                <div class="price-del">
+                                  <span class="price" data-unit-price>₴{unitPrice.toLocaleString("uk-UA")}</span>
+                                  <span class="muted" data-total-line>× {qty} = ₴{totalPrice.toLocaleString("uk-UA")}</span>
+                                  <span class="float-right">
+                                    <span class="availb">Наявність: </span>
+                                    <span class="check"><i class="fa fa-check-square-o" /> На складі</span>
+                                  </span>
                                 </div>
+
+                                <div class="option has-border d-lg-flex size-color">
+                                  <div>
+                                    <h6>ОБЕРІТЬ РОЗМІРИ:</h6>
+                                    <small class="text-muted d-block mb-3">Натисніть ще раз, щоб скасувати вибір</small>
+
+                                    <strong>Ширина</strong>
+                                    <div class="grid">
+                                      {widths.map((w) => (
+                                        <a href={getUpdatedUrl('width', w)} class={`cube ${selectedWidth === w ? 'active' : ''} ${isOptionDisabled('width', w) ? 'disabled' : ''}`} data-param="width" data-value={w} role="button" tabindex="0">{w}</a>
+                                      ))}
+                                    </div>
+
+                                    <strong>Висота</strong>
+                                    <div class="grid">
+                                      {heights.map((h) => (
+                                        <a href={getUpdatedUrl('height', h)} class={`cube ${selectedHeight === h ? 'active' : ''} ${isOptionDisabled('height', h) ? 'disabled' : ''}`} data-param="height" data-value={h} role="button" tabindex="0">{h}</a>
+                                      ))}
+                                    </div>
+
+                                    <strong>Глибина</strong>
+                                    <div class="grid">
+                                      {depths.map((d) => (
+                                        <a href={getUpdatedUrl('depth', d)} class={`cube ${selectedDepth === d ? 'active' : ''} ${isOptionDisabled('depth', d) ? 'disabled' : ''}`} data-param="depth" data-value={d} role="button" tabindex="0">{d}</a>
+                                      ))}
+                                    </div>
+                                  </div>
+                                </div>
+
+                                {bodyList.length > 0 && (
+                                  <div class="option has-border mt-4">
+                                    <h5 class="text-danger">Колір корпусу</h5>
+                                    <div class="row">
+                                      {bodyList.map((item) => (
+                                        <div class="col-3 col-sm-2 text-center mb-4">
+                                          <a href={getUpdatedUrl('body', item.id)} class={`color-box d-block ${selectedBodyId === item.id ? 'active' : ''}`} data-param="body" data-value={item.id} role="button" tabindex="0" aria-label={`Корпус: ${item.title}`} title={item.title}>
+                                            {item.img?.url
+                                              ? <img src={getImgUrl(item.img)} alt={item.title} class="img-fluid border" />
+                                              : <div class="border d-flex align-items-center justify-content-center" style="height:100px;background:#f8f8f8"><span class="text-muted small">—</span></div>
+                                            }
+                                          </a>
+                                          <div class="mt-1 small">{item.title}</div>
+                                        </div>
+                                      ))}
+                                    </div>
+                                  </div>
+                                )}
+
+                                {frontList.length > 0 && (
+                                  <div class="option has-border mt-4">
+                                    <h5 class="text-danger">Колір фасадів</h5>
+                                    <div class="row">
+                                      {frontList.map((item) => (
+                                        <div class="col-3 col-sm-2 text-center mb-4">
+                                          <a href={getUpdatedUrl('front', item.id)} class={`color-box d-block ${selectedFrontId === item.id ? 'active' : ''}`} data-param="front" data-value={item.id} role="button" tabindex="0" aria-label={`Фасад: ${item.title}`} title={item.title}>
+                                            {item.img?.url
+                                              ? <img src={getImgUrl(item.img)} alt={item.title} class="img-fluid border" />
+                                              : <div class="border d-flex align-items-center justify-content-center" style="height:100px;background:#f8f8f8"><span class="text-muted small">—</span></div>
+                                            }
+                                          </a>
+                                          <div class="mt-1 small">{item.title}</div>
+                                        </div>
+                                      ))}
+                                    </div>
+                                  </div>
+                                )}
+
+                                <!-- Кількість (Bootstrap) -->
+                                <div class="has-border cart-area">
+                                  <form method="GET" action={baseUrl} class="mt-2" data-qty-form>
+                                    {selectedWidth  && <input type="hidden" name="width"  value={selectedWidth} />}
+                                    {selectedHeight && <input type="hidden" name="height" value={selectedHeight} />}
+                                    {selectedDepth  && <input type="hidden" name="depth"  value={selectedDepth} />}
+                                    {selectedBodyId && <input type="hidden" name="body"   value={selectedBodyId} />}
+                                    {selectedFrontId&& <input type="hidden" name="front"  value={selectedFrontId} />}
+
+                                    <label class="mb-1 d-block">Кількість:</label>
+                                    <div class="input-group quantity-group">
+                                      <div class="input-group-prepend">
+                                        <button class="btn btn-outline-secondary" type="button" data-qty-down>-</button>
+                                      </div>
+                                      <input id="quantity_wanted" name="qty" type="number" min="1" step="1" value={qty} class="form-control" />
+                                      <div class="input-group-append">
+                                        <button class="btn btn-outline-secondary" type="button" data-qty-up>+</button>
+                                      </div>
+                                    </div>
+                                  </form>
+                                </div>
+
+                                <!-- Кошик -->
+                                <form method="POST" action="/cart/add" class="mt-3" data-cart-form>
+                                  <input type="hidden" name="payload" value={selectionJson} data-payload />
+                                  <button class="btn btn-primary add-to-cart" type="submit" data-add-btn disabled={!selection.isComplete}>
+                                    <i class="fa fa-shopping-cart" aria-hidden="true"></i>
+                                    <span>{selection.isComplete ? 'До кошика' : 'Оберіть розміри та обидва кольори'}</span>
+                                  </button>
+                                </form>
+
+                                <details class="mt-3">
+                                  <summary>Переглянути payload вибору</summary>
+                                  <pre class="mt-2" style="white-space:pre-wrap" data-payload-preview>{selectionJson}</pre>
+                                </details>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div class="review">
+                            <ul class="nav nav-tabs">
+                              <li class="active"><a data-toggle="tab" href="#description" class="active show">Опис</a></li>
+                            </ul>
+                            <div class="tab-content">
+                              <div id="description" class="tab-pane fade in active show">
+                                <p>{productType?.furniture_description}</p>
                               </div>
                             </div>
                           </div>
                         </div>
                       </div>
-                    ) : (
-                      <p>Товар не знайдено.</p>
-                    )
-                  }
+                    </div>
+                  ) : (<p>Товар не знайдено.</p>)}
                 </div>
               </div>
             </div>
@@ -349,7 +347,13 @@ const totalPrice = matched
         </div>
       </div>
     </div>
+
+    <!-- JSON дані для клієнта -->
+    <script type="application/json" id="product-data" set:html={clientDataSafe}></script>
+
     <Footer />
+
+    <!-- Твої бібліотеки -->
     <script src="/libs/jquery/jquery.min.js" is:inline></script>
     <script src="/libs/popper/popper.min.js" is:inline></script>
     <script src="/libs/bootstrap/js/bootstrap.min.js" is:inline></script>
@@ -360,5 +364,8 @@ const totalPrice = matched
     <script src="/libs/slider-range/js/draggable-0.1.js" is:inline></script>
     <script src="/libs/slider-range/js/jquery.slider.js" is:inline></script>
     <script src="/js/theme.js" is:inline></script>
+
+   <script src="/js/product-options.js" defer></script>
+
   </body>
 </html>

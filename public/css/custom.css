@@ -8,30 +8,56 @@
 .grid {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
-  margin-top: 10px;
+  gap: 8px;
+  margin-bottom: 12px;
 }
 .cube {
-  padding: 8px 16px;
-  border: 2px solid #ccc;
-  border-radius: 4px;
-  cursor: pointer;
-  text-align: center;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 48px;
+  height: 40px;
+  border: 1px solid #ddd;
+  padding: 0 10px;
+  border-radius: 6px;
   text-decoration: none;
-  color: black;
+  color: inherit;
+  user-select: none;
 }
 .cube.active {
-  border-color: green;
-  font-weight: bold;
+  outline: 2px solid #45ab67;
+  outline-offset: 2px;
 }
 .cube.disabled {
-  border-color: #eee;
-  color: #aaa;
   pointer-events: none;
-  cursor: not-allowed;
+  opacity: 0.35;
 }
 
-.color-box.selected {
-  border: 2px solid #dc3545 !important; /* або твій бренд-колір */
-  box-shadow: 0 0 0 2px #f8d7da;
+.color-box img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.color-box.active img {
+  outline: 2px solid #45ab67;
+  outline-offset: 2px;
+}
+.price .muted {
+  color: #888;
+  font-weight: 400;
+  margin-left: 8px;
+  font-size: 0.9em;
+}
+#configurator {
+  scroll-margin-top: 90px;
+}
+.btn[disabled] {
+  pointer-events: none;
+  opacity: 0.6;
+}
+.quantity-group {
+  max-width: 240px;
+}
+.quantity-group input[type="number"] {
+  text-align: center;
 }
