@@ -66,6 +66,13 @@ function getImgUrl(img) {
     ? img.url
     : `https://miriam-backend.onrender.com${img.url}`;
 }
+
+const qty = Math.max(1, Number(search.get("qty")) || 1);
+
+const totalPrice = matched
+  ? matched.price * qty
+  : (productType?.basic_price || 0) * qty;
+
 ---
 
 <html lang="uk">

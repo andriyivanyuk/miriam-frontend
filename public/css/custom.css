@@ -30,3 +30,8 @@
   pointer-events: none;
   cursor: not-allowed;
 }
+
+.color-box.selected {
+  border: 2px solid #dc3545 !important; /* або твій бренд-колір */
+  box-shadow: 0 0 0 2px #f8d7da;
+}
