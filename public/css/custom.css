@@ -26,7 +26,6 @@
 }
 .cube.active {
   outline: 2px solid #45ab67;
-  outline-offset: 2px;
 }
 .cube.disabled {
   pointer-events: none;

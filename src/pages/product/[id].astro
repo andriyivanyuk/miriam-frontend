@@ -223,24 +223,24 @@ const clientDataSafe = JSON.stringify(rawClientData)
 
                                 <div class="option has-border d-lg-flex size-color">
                                   <div>
-                                    <h6>ОБЕРІТЬ РОЗМІРИ:</h6>
-                                    <small class="text-muted d-block mb-3">Натисніть ще раз, щоб скасувати вибір</small>
+                                    <span class="d-block mb-1 mt-1">Оберіть розміри:</span>
+                                    <small class="text-muted d-block mb-1">Натисніть ще раз, щоб скасувати вибір</small>
 
-                                    <strong>Ширина</strong>
+                                    <strong>Ширина, мм</strong>
                                     <div class="grid">
                                       {widths.map((w) => (
                                         <a href={getUpdatedUrl('width', w)} class={`cube ${selectedWidth === w ? 'active' : ''} ${isOptionDisabled('width', w) ? 'disabled' : ''}`} data-param="width" data-value={w} role="button" tabindex="0">{w}</a>
                                       ))}
                                     </div>
 
-                                    <strong>Висота</strong>
+                                    <strong>Висота, мм</strong>
                                     <div class="grid">
                                       {heights.map((h) => (
                                         <a href={getUpdatedUrl('height', h)} class={`cube ${selectedHeight === h ? 'active' : ''} ${isOptionDisabled('height', h) ? 'disabled' : ''}`} data-param="height" data-value={h} role="button" tabindex="0">{h}</a>
                                       ))}
                                     </div>
 
-                                    <strong>Глибина</strong>
+                                    <strong>Глибина, мм</strong>
                                     <div class="grid">
                                       {depths.map((d) => (
                                         <a href={getUpdatedUrl('depth', d)} class={`cube ${selectedDepth === d ? 'active' : ''} ${isOptionDisabled('depth', d) ? 'disabled' : ''}`} data-param="depth" data-value={d} role="button" tabindex="0">{d}</a>
@@ -261,7 +261,7 @@ const clientDataSafe = JSON.stringify(rawClientData)
                                               : <div class="border d-flex align-items-center justify-content-center" style="height:100px;background:#f8f8f8"><span class="text-muted small">—</span></div>
                                             }
                                           </a>
-                                          <div class="mt-1 small">{item.title}</div>
+                                          <div class="mt-1 medium">{item.title}</div>
                                         </div>
                                       ))}
                                     </div>
@@ -280,15 +280,15 @@ const clientDataSafe = JSON.stringify(rawClientData)
                                               : <div class="border d-flex align-items-center justify-content-center" style="height:100px;background:#f8f8f8"><span class="text-muted small">—</span></div>
                                             }
                                           </a>
-                                          <div class="mt-1 small">{item.title}</div>
+                                          <div class="mt-1 medium">{item.title}</div>
                                         </div>
                                       ))}
                                     </div>
                                   </div>
                                 )}
 
-                                <!-- Кількість (Bootstrap) -->
-                                <div class="has-border cart-area">
+                                <!-- Кількість -->
+                                <div class="cart-area">
                                   <form method="GET" action={baseUrl} class="mt-2" data-qty-form>
                                     {selectedWidth  && <input type="hidden" name="width"  value={selectedWidth} />}
                                     {selectedHeight && <input type="hidden" name="height" value={selectedHeight} />}
@@ -296,7 +296,7 @@ const clientDataSafe = JSON.stringify(rawClientData)
                                     {selectedBodyId && <input type="hidden" name="body"   value={selectedBodyId} />}
                                     {selectedFrontId&& <input type="hidden" name="front"  value={selectedFrontId} />}
 
-                                    <label class="mb-1 d-block">Кількість:</label>
+                                    <h6>Кількість:</h6>
                                     <div class="input-group quantity-group">
                                       <div class="input-group-prepend">
                                         <button class="btn btn-outline-secondary" type="button" data-qty-down>-</button>
@@ -312,7 +312,7 @@ const clientDataSafe = JSON.stringify(rawClientData)
                                 <!-- Кошик -->
                                 <form method="POST" action="/cart/add" class="mt-3" data-cart-form>
                                   <input type="hidden" name="payload" value={selectionJson} data-payload />
-                                  <button class="btn btn-primary add-to-cart" type="submit" data-add-btn disabled={!selection.isComplete}>
+                                  <button class="btn  add-to-cart" type="submit" data-add-btn disabled={!selection.isComplete}>
                                     <i class="fa fa-shopping-cart" aria-hidden="true"></i>
                                     <span>{selection.isComplete ? 'До кошика' : 'Оберіть розміри та обидва кольори'}</span>
                                   </button>
