@@ -117,6 +117,7 @@
       unit_price: unit,
       total_price: total,
       isComplete: !!(m && state.body && state.front),
+      product_img: DATA.product_img || null,
     };
   }
   function render() {

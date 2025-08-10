@@ -1,0 +1,226 @@
+---
+export const prerender = false;
+
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+
+type Selection = {
+  productId: number | string;
+  model_name?: string | null;
+  qty?: number;
+  size?: { id?: number; width?: number|null; height?: number|null; depth?: number|null; price?: number|null } | null;
+  body_material?: { id: number; title?: string; img?: string } | null;
+  front_material?: { id: number; title?: string; img?: string } | null;
+  base_price?: number;
+  unit_price?: number;
+  total_price?: number;
+  product_img?: string | null; // додамо пізніше у Кроці 2 на сторінці продукту
+};
+
+type CartItem = { key: string; qty: number; selection: Selection; addedAt: string };
+
+let cart: CartItem[] = [];
+try { cart = JSON.parse(Astro.cookies.get("cart")?.value || "[]"); } catch {}
+
+const items = cart.map(i => {
+  const sel = i.selection || {};
+  const qty = Number(i.qty || sel.qty || 1);
+  const unit = Number(sel.unit_price ?? sel.base_price ?? 0);
+  const lineTotal = unit * qty;
+  return { key: i.key, qty, unit, lineTotal, sel };
+});
+
+const subtotal = items.reduce((s, i) => s + i.lineTotal, 0);
+const itemsCount = items.reduce((s, i) => s + i.qty, 0);
+
+// утил для форматування
+const fmtUA = (n: number) => n.toLocaleString("uk-UA");
+---
+
+<html lang="uk">
+  <head>
+    <meta charset="utf-8" />
+    <title>Кошик</title>
+
+    <!-- Підключи твої стилі з public як на інших сторінках -->
+    <link rel="stylesheet" href="/libs/bootstrap/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="/libs/font-awesome/css/font-awesome.min.css" />
+    <link rel="stylesheet" href="/libs/nivo-slider/css/nivo-slider.css" />
+    <link rel="stylesheet" href="/libs/nivo-slider/css/animate.css" />
+    <link rel="stylesheet" href="/libs/nivo-slider/css/style.css" />
+    <link rel="stylesheet" href="/libs/font-material/css/material-design-iconic-font.min.css" />
+    <link rel="stylesheet" href="/libs/slider-range/css/jslider.css" />
+    <link rel="stylesheet" href="/libs/owl-carousel/assets/owl.carousel.min.css" />
+    <link rel="stylesheet" href="/libs/slick-slider/css/slick.css" />
+    <link rel="stylesheet" href="/libs/slick-slider/css/slick-theme.css" />
+    <link rel="stylesheet" href="/css/style.css" />
+    <link rel="stylesheet" href="/css/reponsive.css" />
+    <link rel="stylesheet" href="/css/custom.css" />
+  </head>
+
+  <body class="product-cart checkout-cart blog">
+    <Header />
+
+    <div class="main-content" id="cart">
+      <div id="wrapper-site">
+        <nav class="breadcrumb-bg">
+          <div class="container no-index">
+            <div class="breadcrumb">
+              <ol>
+                <li><a href="/"><span>Головна</span></a></li>
+                <li><a><span>Кошик</span></a></li>
+              </ol>
+            </div>
+          </div>
+        </nav>
+
+        <div class="container">
+          <div class="row">
+            <div id="content-wrapper" class="col-xs-12 col-sm-12 col-md-12 col-lg-12 onecol">
+              <section id="main">
+                <div class="cart-grid row">
+                  <div class="col-md-9 col-xs-12 check-info">
+                    <h1 class="title-page">Кошик</h1>
+
+                    {items.length ? (
+                      <div class="cart-container">
+                        <div class="cart-overview js-cart">
+                          <ul class="cart-items">
+                            {items.map(({ key, qty, unit, lineTotal, sel }) => (
+                              <li class="cart-item">
+                                <div class="product-line-grid row justify-content-between">
+                                  <!-- image -->
+                                  <div class="product-line-grid-left col-md-2">
+                                    <span class="product-image media-middle">
+                                      <a href={`/product/${sel.productId}`}>
+                                        <img class="img-fluid" src={sel.product_img || "/img/product/placeholder.jpg"} alt={sel.model_name || "Product"} />
+                                      </a>
+                                    </span>
+                                  </div>
+
+                                  <!-- title, attrs, unit -->
+                                  <div class="product-line-grid-body col-md-6">
+                                    <div class="product-line-info">
+                                      <a class="label" href={`/product/${sel.productId}`} data-id_customization="0">
+                                        {sel.model_name || `Товар #${sel.productId}`}
+                                      </a>
+                                    </div>
+                                    <div class="product-line-info product-price">
+                                      <span class="value">₴{fmtUA(unit)}</span>
+                                    </div>
+
+                                    {sel.size && (
+                                      <div class="product-line-info">
+                                        <span class="label-atrr">Розмір:</span>
+                                        <span class="value">
+                                          {sel.size.width ?? "—"} × {sel.size.height ?? "—"} × {sel.size.depth ?? "—"} мм
+                                        </span>
+                                      </div>
+                                    )}
+
+                                    {sel.body_material && (
+                                      <div class="product-line-info">
+                                        <span class="label-atrr">Корпус:</span>
+                                        <span class="value">{sel.body_material.title}</span>
+                                      </div>
+                                    )}
+                                    {sel.front_material && (
+                                      <div class="product-line-info">
+                                        <span class="label-atrr">Фасади:</span>
+                                        <span class="value">{sel.front_material.title}</span>
+                                      </div>
+                                    )}
+                                  </div>
+
+                                  <!-- qty, line total, remove -->
+                                  <div class="product-line-grid-right text-center product-line-actions col-md-4">
+                                    <div class="row">
+                                      <div class="col-md-5 col qty">
+                                        <div class="label">Qty:</div>
+                                        <div class="quantity">
+                                          <!-- форма оновлення кількості -->
+                                          <form method="POST" action="/api/cart/update" class="input-group">
+                                            <input type="hidden" name="key" value={key} />
+                                            <input name="qty" type="number" min="1" value={qty} class="input-group form-control"  oninput="this.form.requestSubmit()"/>
+                                            <span class="input-group-btn-vertical">
+                                              <button class="btn btn-touchspin js-touchspin bootstrap-touchspin-up" type="submit" name="delta" value="+1">+</button>
+                                              <button class="btn btn-touchspin js-touchspin bootstrap-touchspin-down" type="submit" name="delta" value="-1">-</button>
+                                            </span>
+                                          </form>
+                                        </div>
+                                      </div>
+
+                                      <div class="col-md-5 col price">
+                                        <div class="label">Total:</div>
+                                        <div class="product-price total">₴{fmtUA(lineTotal)}</div>
+                                      </div>
+
+                                      <div class="col-md-2 col text-xs-right align-self-end">
+                                        <div class="cart-line-product-actions">
+                                          <!-- форма видалення -->
+                                          <form method="POST" action="/api/cart/remove">
+                                            <input type="hidden" name="key" value={key} />
+                                            <button class="remove-from-cart btn btn-link p-0" type="submit" title="Видалити">
+                                              <i class="fa fa-trash-o" aria-hidden="true"></i>
+                                            </button>
+                                          </form>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      </div>
+                    ) : (
+                      <p>Кошик порожній.</p>
+                    )}
+
+                    <div class="d-flex gap-2 mt-3">
+                      <a href="/" class="btn btn-secondary">Продовжити покупки</a>
+                      {items.length ? (
+                         <form method="POST" action="/api/cart/clear" class="ml-2">
+                           <button class="btn btn-outline-danger" type="submit">Очистити кошик</button>
+                         </form>
+                       ) : null}
+                    </div>
+
+                   
+                      {items.length ? (
+                      <a href="/checkout" class="continue btn btn-primary pull-xs-right mt-3">
+                          Continue
+                      </a>
+                      ) : null}
+                  </div>
+
+                  <div class="cart-grid-right col-xs-12 col-lg-3">
+                    <div class="cart-summary">
+                      <div class="cart-detailed-totals">
+                        <div class="cart-summary-products">
+                          <div class="summary-label">У кошику {itemsCount} шт.</div>
+                        </div>
+                        <div class="cart-summary-line" id="cart-subtotal-products">
+                          <span class="label js-subtotal">Разом за товари:</span>
+                          <span class="value">₴{fmtUA(subtotal)}</span>
+                        </div>
+                        <div class="cart-summary-line cart-total">
+                          <span class="label">Всього:</span>
+                          <span class="value">₴{fmtUA(subtotal)} (tax incl.)</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                </div>
+              </section>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <Footer />
+  </body>
+</html>
