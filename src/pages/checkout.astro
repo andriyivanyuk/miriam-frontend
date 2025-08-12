@@ -78,34 +78,49 @@ const CHECKOUT_JSON = safeJson({ api: API_BASE, token: API_TOKEN, items });
     <link rel="stylesheet" href="/libs/bootstrap/css/bootstrap.min.css" />
     <link rel="stylesheet" href="/css/style.css" />
     <style>
-      .checkout-wrap {
-        padding: 24px 0;
-      }
       .summary-card {
         background: #2d2f31;
         color: #fff;
         border-radius: 0.5rem;
+        padding: 1.5rem;
       }
-      .summary-card .list-unstyled li {
-        margin: 0.35rem 0;
+      .summary-item {
+        display: flex;
+        gap: 1rem;
+        align-items: flex-start;
+        margin-bottom: 1rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+        padding-bottom: 1rem;
       }
-      .section-title {
+      .summary-item img {
+        width: 80px;
+        height: auto;
+        border-radius: 4px;
+        object-fit: cover;
+      }
+      .summary-details {
+        flex: 1;
+      }
+      .item-title {
         font-weight: 600;
-        margin: 24px 0 12px;
+        font-size: 1.05rem;
+        margin-bottom: 0.25rem;
       }
-      .form-note {
+      .item-price {
+        font-size: 0.95rem;
+        color: #ccc;
+        margin-bottom: 0.25rem;
+      }
+      .item-attr {
         font-size: 0.9rem;
-        color: #6c757d;
+        color: #ddd;
       }
-      .np-row {
-        display: none;
+      .totals {
+        margin-top: 1rem;
+        font-size: 1.05rem;
       }
-      .form-label {
-        font-weight: 600;
-      }
-      .btn-dark {
-        background: #222;
-        border-color: #222;
+      .totals .fw-bold {
+        font-size: 1.15rem;
       }
     </style>
   </head>
@@ -113,303 +128,319 @@ const CHECKOUT_JSON = safeJson({ api: API_BASE, token: API_TOKEN, items });
   <body class="product-checkout checkout-cart">
     <Header />
     <div id="checkout" class="main-content">
-      <main class="checkout-wrap">
-        <div class="container">
-          <h1 class="h3 mb-4">Оформлення замовлення</h1>
+      <div class="container">
+        <h1 class="h3 mb-4">Оформлення замовлення</h1>
 
-          <div class="row">
-            <!-- Форма -->
-            <div class="col-lg-8">
-              <form id="checkoutForm" class="needs-validation" novalidate>
-                <h2 class="h5 section-title">Контактні дані</h2>
+        <div class="row">
+          <!-- Форма -->
+          <div class="col-lg-8">
+            <form id="checkoutForm" class="needs-validation" novalidate>
+              <h2 class="h5 section-title">Контактні дані</h2>
 
-                <div class="mb-3">
-                  <label class="form-label">Ім’я *</label>
-                  <input
-                    type="text"
-                    class="form-control"
-                    name="first_name"
-                    required
-                  />
-                </div>
-
-                <div class="mb-3">
-                  <label class="form-label">Прізвище *</label>
-                  <input
-                    type="text"
-                    class="form-control"
-                    name="last_name"
-                    required
-                  />
-                </div>
-
-                <div class="mb-3">
-                  <label class="form-label">Електронна пошта *</label>
-                  <input
-                    type="email"
-                    class="form-control"
-                    name="email"
-                    required
-                  />
-                </div>
-
-                <div class="mb-3">
-                  <label class="form-label">Телефон *</label>
-                  <input
-                    type="tel"
-                    class="form-control"
-                    name="phone"
-                    required
-                  />
-                </div>
-
-                <h2 class="h5 section-title">Спосіб доставки</h2>
-                <div class="mb-3">
-                  <label class="form-label">Оберіть спосіб</label>
-                  <select
-                    class="form-select"
-                    name="delivery_method"
-                    id="deliverySelect"
-                  >
-                    <option value="courier_kyiv" selected
-                      >Кур’єр по Київській області</option
-                    >
-                    <option value="nova_poshta">Нова Пошта</option>
-                    <option value="pickup">Самовивіз</option>
-                  </select>
-                </div>
-
-                <!-- Кур’єр -->
-                <div class="mb-3" id="addressGroup">
-                  <label class="form-label">Адреса доставки</label>
-                  <input
-                    type="text"
-                    class="form-control"
-                    name="delivery_address"
-                    placeholder="вул. Прикладна, 1"
-                  />
-                  <div class="form-note">Заповнюйте, якщо обрали кур’єра.</div>
-                </div>
-
-                <!-- Нова Пошта -->
-                <div class="np-row" id="npRow">
-                  <div class="mb-3">
-                    <label class="form-label">Місто (Нова Пошта)</label>
-                    <input
-                      type="text"
-                      class="form-control"
-                      name="np_city"
-                      placeholder="Київ"
-                    />
-                  </div>
-                  <div class="mb-3">
-                    <label class="form-label">Відділення (Нова Пошта)</label>
-                    <input
-                      type="text"
-                      class="form-control"
-                      name="np_branch"
-                      placeholder="Відділення №..."
-                    />
-                  </div>
-                </div>
-
-                <h2 class="h5 section-title">Метод оплати</h2>
-                <div class="mb-2 form-check">
-                  <input
-                    class="form-check-input"
-                    type="radio"
-                    name="payment_method"
-                    id="payBank"
-                    value="bank_transfer"
-                    checked
-                  />
-                  <label class="form-check-label" for="payBank"
-                    >Оплата через Р/Р</label
-                  >
-                </div>
-                <div class="mb-3 form-check">
-                  <input
-                    class="form-check-input"
-                    type="radio"
-                    name="payment_method"
-                    id="payCOD"
-                    value="cod"
-                  />
-                  <label class="form-check-label" for="payCOD"
-                    >Готівкою при отриманні</label
-                  >
-                </div>
-
-                <div class="mb-3 form-check">
-                  <input
-                    class="form-check-input"
-                    type="checkbox"
-                    name="prepayment_agreement"
-                    id="prepay"
-                    checked
-                  />
-                  <label class="form-check-label" for="prepay"
-                    >Я погоджуюсь з умовами 30% передоплати</label
-                  >
-                </div>
-
-                <div class="mb-4">
-                  <label class="form-label">Коментар</label>
-                  <textarea
-                    class="form-control"
-                    name="comment"
-                    rows="4"
-                    placeholder="Ваші побажання..."></textarea>
-                </div>
-
-                <div class="d-flex gap-2">
-                  <a href="/cart" class="btn btn-outline-secondary"
-                    >Назад до кошика</a
-                  >
-                  <button class="btn btn-dark" type="submit"
-                    >Підтвердити замовлення</button
-                  >
-                </div>
-              </form>
-            </div>
-
-            <!-- Права колонка -->
-            <div class="col-lg-4 mt-4 mt-lg-0">
-              <div class="p-3 summary-card">
-                <div class="h6 mb-2">У кошику {itemsCount} шт.</div>
-                <ul class="list-unstyled mb-2">
-                  <li>Разом за товари: ₴{fmtUA(subtotal)}</li>
-                  <li class="fw-bold">Всього: ₴{fmtUA(subtotal)}</li>
-                </ul>
+              <div class="mb-3">
+                <label class="form-label">Ім’я *</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  name="first_name"
+                  required
+                />
               </div>
 
-              <div class="card mt-3">
-                <div class="card-body small">
-                  <div class="mb-2">Безпечна обробка даних</div>
-                  <div class="mb-2">Швидка доставка</div>
-                  <div>Повернення згідно політики магазину</div>
+              <div class="mb-3">
+                <label class="form-label">Прізвище *</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  name="last_name"
+                  required
+                />
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label">Електронна пошта *</label>
+                <input
+                  type="email"
+                  class="form-control"
+                  name="email"
+                  required
+                />
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label">Телефон *</label>
+                <input type="tel" class="form-control" name="phone" required />
+              </div>
+
+              <h2 class="h5 section-title">Спосіб доставки</h2>
+              <div class="mb-3">
+                <label class="form-label">Оберіть спосіб</label>
+                <select
+                  class="custom-select"
+                  name="delivery_method"
+                  id="deliverySelect"
+                >
+                  <option value="courier_kyiv" selected
+                    >Кур’єр по Київській області</option
+                  >
+                  <option value="nova_poshta">Нова Пошта</option>
+                  <option value="pickup">Самовивіз</option>
+                </select>
+              </div>
+
+              <!-- Кур’єр -->
+              <div class="mb-3" id="addressGroup">
+                <label class="form-label">Адреса доставки</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  name="delivery_address"
+                  placeholder="вул. Прикладна, 1"
+                />
+                <div class="form-note">Заповнюйте, якщо обрали кур’єра.</div>
+              </div>
+
+              <!-- Нова Пошта -->
+              <div class="np-row" id="npRow">
+                <div class="mb-3">
+                  <label class="form-label">Місто (Нова Пошта)</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    name="np_city"
+                    placeholder="Київ"
+                  />
                 </div>
+                <div class="mb-3">
+                  <label class="form-label">Відділення (Нова Пошта)</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    name="np_branch"
+                    placeholder="Відділення №..."
+                  />
+                </div>
+              </div>
+
+              <h2 class="h5 section-title">Метод оплати</h2>
+              <div class="mb-2 form-check">
+                <input
+                  class="form-check-input"
+                  type="radio"
+                  name="payment_method"
+                  id="payBank"
+                  value="bank_transfer"
+                  checked
+                />
+                <label class="form-check-label" for="payBank"
+                  >Оплата через Р/Р</label
+                >
+              </div>
+              <div class="mb-3 form-check">
+                <input
+                  class="form-check-input"
+                  type="radio"
+                  name="payment_method"
+                  id="payCOD"
+                  value="cod"
+                />
+                <label class="form-check-label" for="payCOD"
+                  >Готівкою при отриманні</label
+                >
+              </div>
+
+              <div class="mb-3 form-check">
+                <input
+                  class="form-check-input"
+                  type="checkbox"
+                  name="prepayment_agreement"
+                  id="prepay"
+                  checked
+                />
+                <label class="form-check-label" for="prepay"
+                  >Я погоджуюсь з умовами 30% передоплати</label
+                >
+              </div>
+
+              <div class="mb-4">
+                <label class="form-label">Коментар</label>
+                <textarea
+                  class="form-control"
+                  name="comment"
+                  rows="4"
+                  placeholder="Ваші побажання..."></textarea>
+              </div>
+
+              <div class="d-flex gap-2">
+                <a href="/cart" class="btn btn-outline-secondary"
+                  >Назад до кошика</a
+                >
+                <button class="btn btn-dark" type="submit"
+                  >Підтвердити замовлення</button
+                >
+              </div>
+            </form>
+          </div>
+
+          <!-- Права колонка -->
+          <div class="col-lg-4 mt-4 mt-lg-0">
+            <div class="summary-card">
+              <div class="h5 mb-3">У кошику {itemsCount} шт.</div>
+
+              {
+                items.map((item) => (
+                  <div class="summary-item">
+                    <img
+                      src={item.product_img || "/img/product/placeholder.jpg"}
+                      alt={item.model_name}
+                    />
+                    <div class="summary-details">
+                      <div class="item-title">{item.model_name}</div>
+                      <div class="item-price">
+                        ₴{fmtUA(item.unit_price)} × {item.qty} = ₴
+                        {fmtUA(item.line_total)}
+                      </div>
+                      {item.size && (
+                        <div class="item-attr">
+                          Розмір: {item.size.width} × {item.size.height} ×{" "}
+                          {item.size.depth} мм
+                        </div>
+                      )}
+                      {item.body_material && (
+                        <div class="item-attr">
+                          Корпус: {item.body_material.title}
+                        </div>
+                      )}
+                      {item.front_material && (
+                        <div class="item-attr">
+                          Фасади: {item.front_material.title}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ))
+              }
+
+              <div class="totals">
+                <div>Разом за товари: ₴{fmtUA(subtotal)}</div>
+                <div class="fw-bold">Всього: ₴{fmtUA(subtotal)}</div>
               </div>
             </div>
           </div>
         </div>
-      </main>
+      </div>
     </div>
+  </body>
 
-    <Footer />
+  <Footer />
 
-    <!-- Дані для клієнта -->
-    <script
-      type="application/json"
-      id="checkout-data"
-      set:html={CHECKOUT_JSON}
-    />
+  <!-- Дані для клієнта -->
+  <script type="application/json" id="checkout-data" set:html={CHECKOUT_JSON} />
 
-    <script is:inline>
-      (function () {
-        const cfgEl = document.getElementById("checkout-data");
-        let CFG = { api: "", token: "", items: [] };
-        try {
-          CFG = JSON.parse(cfgEl?.textContent || "{}");
-        } catch {}
+  <script is:inline>
+    (function () {
+      const cfgEl = document.getElementById("checkout-data");
+      let CFG = { api: "", token: "", items: [] };
+      try {
+        CFG = JSON.parse(cfgEl?.textContent || "{}");
+      } catch {}
 
-        const API = CFG.api; // прод-URL
-        const TOKEN = CFG.token || ""; // публічний токен
-        const ITEMS = Array.isArray(CFG.items) ? CFG.items : [];
+      const API = CFG.api; // прод-URL
+      const TOKEN = CFG.token || ""; // публічний токен
+      const ITEMS = Array.isArray(CFG.items) ? CFG.items : [];
 
-        const form = document.getElementById("checkoutForm");
-        const select = document.getElementById("deliverySelect");
-        const npRow = document.getElementById("npRow");
-        const addressGroup = document.getElementById("addressGroup");
+      const form = document.getElementById("checkoutForm");
+      const select = document.getElementById("deliverySelect");
+      const npRow = document.getElementById("npRow");
+      const addressGroup = document.getElementById("addressGroup");
 
-        function toggleDeliveryBlocks() {
-          const v = select.value;
-          npRow.style.display = v === "nova_poshta" ? "block" : "none";
-          addressGroup.style.display = v === "courier_kyiv" ? "block" : "none";
+      function toggleDeliveryBlocks() {
+        const v = select.value;
+        npRow.style.display = v === "nova_poshta" ? "block" : "none";
+        addressGroup.style.display = v === "courier_kyiv" ? "block" : "none";
+      }
+      toggleDeliveryBlocks();
+      select.addEventListener("change", toggleDeliveryBlocks);
+
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const fd = new FormData(form);
+
+        const first_name = String(fd.get("first_name") || "").trim();
+        const last_name = String(fd.get("last_name") || "").trim();
+        const email = String(fd.get("email") || "").trim();
+        const phone = String(fd.get("phone") || "").trim();
+        const delivery_method = String(
+          fd.get("delivery_method") || "courier_kyiv",
+        );
+        const payment_method = String(
+          fd.get("payment_method") || "bank_transfer",
+        );
+        const prepayment_agreement = !!fd.get("prepayment_agreement");
+        const comment = String(fd.get("comment") || "").trim();
+
+        let delivery_address = "";
+        if (delivery_method === "courier_kyiv") {
+          delivery_address = String(fd.get("delivery_address") || "").trim();
+        } else if (delivery_method === "nova_poshta") {
+          delivery_address = [fd.get("np_city"), fd.get("np_branch")]
+            .filter(Boolean)
+            .join(", ");
+        } else {
+          delivery_address = "Самовивіз";
         }
-        toggleDeliveryBlocks();
-        select.addEventListener("change", toggleDeliveryBlocks);
 
-        form.addEventListener("submit", async (e) => {
-          e.preventDefault();
-          const fd = new FormData(form);
+        if (!first_name || !last_name || !email || !phone) {
+          alert("Заповніть обовʼязкові поля (Імʼя, Прізвище, Email, Телефон).");
+          return;
+        }
 
-          const first_name = String(fd.get("first_name") || "").trim();
-          const last_name = String(fd.get("last_name") || "").trim();
-          const email = String(fd.get("email") || "").trim();
-          const phone = String(fd.get("phone") || "").trim();
-          const delivery_method = String(
-            fd.get("delivery_method") || "courier_kyiv",
-          );
-          const payment_method = String(
-            fd.get("payment_method") || "bank_transfer",
-          );
-          const prepayment_agreement = !!fd.get("prepayment_agreement");
-          const comment = String(fd.get("comment") || "").trim();
+        const payload = {
+          data: {
+            first_name,
+            last_name,
+            email,
+            phone,
+            delivery_method,
+            delivery_address,
+            payment_method,
+            prepayment_agreement,
+            comment,
+            items: ITEMS,
+          },
+        };
 
-          let delivery_address = "";
-          if (delivery_method === "courier_kyiv") {
-            delivery_address = String(fd.get("delivery_address") || "").trim();
-          } else if (delivery_method === "nova_poshta") {
-            delivery_address = [fd.get("np_city"), fd.get("np_branch")]
-              .filter(Boolean)
-              .join(", ");
-          } else {
-            delivery_address = "Самовивіз";
-          }
+        try {
+          // НАПРЯМУ НА ПРОД STRAPI (без проксі)
+          const res = await fetch(`${API}/api/orders`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              ...(TOKEN ? { Authorization: `Bearer ${TOKEN}` } : {}),
+            },
+            body: JSON.stringify(payload),
+          });
 
-          if (!first_name || !last_name || !email || !phone) {
+          if (!res.ok) {
+            const err = await res.json().catch(() => ({}));
+            console.error("Order error:", err);
             alert(
-              "Заповніть обовʼязкові поля (Імʼя, Прізвище, Email, Телефон).",
+              "Сталася помилка при створенні замовлення. Спробуйте ще раз.",
             );
             return;
           }
 
-          const payload = {
-            data: {
-              first_name,
-              last_name,
-              email,
-              phone,
-              delivery_method,
-              delivery_address,
-              payment_method,
-              prepayment_agreement,
-              comment,
-              items: ITEMS,
-            },
-          };
-
-          try {
-            // НАПРЯМУ НА ПРОД STRAPI (без проксі)
-            const res = await fetch(`${API}/api/orders`, {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-                ...(TOKEN ? { Authorization: `Bearer ${TOKEN}` } : {}),
-              },
-              body: JSON.stringify(payload),
-            });
-
-            if (!res.ok) {
-              const err = await res.json().catch(() => ({}));
-              console.error("Order error:", err);
-              alert(
-                "Сталася помилка при створенні замовлення. Спробуйте ще раз.",
-              );
-              return;
-            }
-
-            alert("Замовлення успішно створено! Дякуємо ❤️");
-            location.href = "/";
-          } catch (err) {
-            console.error(err);
-            alert(
-              "Мережева помилка. Перевірте інтернет або спробуйте пізніше.",
-            );
-          }
-        });
-      })();
-    </script>
-  </body>
+          alert("Замовлення успішно створено! Дякуємо ❤️");
+          await fetch("/api/cart/clear", {
+            method: "POST",
+            credentials: "same-origin",
+          });
+          location.href = "/";
+        } catch (err) {
+          console.error(err);
+          alert("Мережева помилка. Перевірте інтернет або спробуйте пізніше.");
+        }
+      });
+    })();
+  </script>
 </html>

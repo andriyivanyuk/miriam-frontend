@@ -7,11 +7,13 @@ export function GET() {
 }
 
 export async function POST({ cookies, redirect }: APIContext) {
-  cookies.set("cart", "[]", {
+  cookies.set("cart", "", {
     path: "/",
     httpOnly: true,
     sameSite: "lax",
-    maxAge: 60 * 60 * 24 * 30,
+    secure: true,
+    maxAge: 0,
   });
+
   return redirect("/cart", 303);
 }

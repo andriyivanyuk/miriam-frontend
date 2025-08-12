@@ -14,7 +14,7 @@ type Selection = {
   base_price?: number;
   unit_price?: number;
   total_price?: number;
-  product_img?: string | null; // додамо пізніше у Кроці 2 на сторінці продукту
+  product_img?: string | null;
 };
 
 type CartItem = { key: string; qty: number; selection: Selection; addedAt: string };
@@ -22,18 +22,57 @@ type CartItem = { key: string; qty: number; selection: Selection; addedAt: strin
 let cart: CartItem[] = [];
 try { cart = JSON.parse(Astro.cookies.get("cart")?.value || "[]"); } catch {}
 
-const items = cart.map(i => {
-  const sel = i.selection || {};
-  const qty = Number(i.qty || sel.qty || 1);
+const sig = (s: Selection) => {
+  const size = s.size || {};
+  const bm = s.body_material || ({} as any);
+  const fm = s.front_material || ({} as any);
+  const unit = Number(s.unit_price ?? s.base_price ?? 0);
+  return [
+    s.productId,
+    size.id ?? `${size.width}x${size.height}x${size.depth}`,
+    bm.id ?? "bm-null",
+    fm.id ?? "fm-null",
+    unit
+  ].join("|");
+};
+
+// 3) групуємо рядки кошика за сигнатурою
+type Grouped = {
+  keys: string[];
+  qty: number;
+  unit: number;
+  sel: Selection;
+};
+const groups = new Map<string, Grouped>();
+
+for (const row of cart) {
+  const sel = row.selection || {};
+  const qty = Number(row.qty || sel.qty || 1);
   const unit = Number(sel.unit_price ?? sel.base_price ?? 0);
-  const lineTotal = unit * qty;
-  return { key: i.key, qty, unit, lineTotal, sel };
+  const signature = sig(sel);
+
+  if (!groups.has(signature)) {
+    groups.set(signature, {
+      keys: [row.key],
+      qty,
+      unit,
+      sel
+    });
+  } else {
+    const g = groups.get(signature)!;
+    g.keys.push(row.key);
+    g.qty += qty;
+  }
+}
+
+const items = Array.from(groups.values()).map(g => {
+  const lineTotal = g.unit * g.qty;
+  return { keys: g.keys, qty: g.qty, unit: g.unit, lineTotal, sel: g.sel };
 });
 
 const subtotal = items.reduce((s, i) => s + i.lineTotal, 0);
 const itemsCount = items.reduce((s, i) => s + i.qty, 0);
 
-// утил для форматування
 const fmtUA = (n: number) => n.toLocaleString("uk-UA");
 ---
 
@@ -42,7 +81,6 @@ const fmtUA = (n: number) => n.toLocaleString("uk-UA");
     <meta charset="utf-8" />
     <title>Кошик</title>
 
-    <!-- Підключи твої стилі з public як на інших сторінках -->
     <link rel="stylesheet" href="/libs/bootstrap/css/bootstrap.min.css" />
     <link rel="stylesheet" href="/libs/font-awesome/css/font-awesome.min.css" />
     <link rel="stylesheet" href="/libs/nivo-slider/css/nivo-slider.css" />
@@ -86,7 +124,7 @@ const fmtUA = (n: number) => n.toLocaleString("uk-UA");
                       <div class="cart-container">
                         <div class="cart-overview js-cart">
                           <ul class="cart-items">
-                            {items.map(({ key, qty, unit, lineTotal, sel }) => (
+                            {items.map(({ keys, qty, unit, lineTotal, sel }) => (
                               <li class="cart-item">
                                 <div class="product-line-grid row justify-content-between">
                                   <!-- image -->
@@ -138,10 +176,10 @@ const fmtUA = (n: number) => n.toLocaleString("uk-UA");
                                       <div class="col-md-5 col qty">
                                         <div class="label">Qty:</div>
                                         <div class="quantity">
-                                          <!-- форма оновлення кількості -->
+                                          <!-- форма оновлення кількості: відправляємо ВСІ ключі групи -->
                                           <form method="POST" action="/api/cart/update" class="input-group">
-                                            <input type="hidden" name="key" value={key} />
-                                            <input name="qty" type="number" min="1" value={qty} class="input-group form-control"  oninput="this.form.requestSubmit()"/>
+                                            {keys.map(k => <input type="hidden" name="key" value={k} />)}
+                                            <input name="qty" type="number" min="1" value={qty} class="input-group form-control" oninput="this.form.requestSubmit()" />
                                             <span class="input-group-btn-vertical">
                                               <button class="btn btn-touchspin js-touchspin bootstrap-touchspin-up" type="submit" name="delta" value="+1">+</button>
                                               <button class="btn btn-touchspin js-touchspin bootstrap-touchspin-down" type="submit" name="delta" value="-1">-</button>
@@ -157,9 +195,9 @@ const fmtUA = (n: number) => n.toLocaleString("uk-UA");
 
                                       <div class="col-md-2 col text-xs-right align-self-end">
                                         <div class="cart-line-product-actions">
-                                          <!-- форма видалення -->
+                                          <!-- форма видалення: видаляємо всі ключі групи -->
                                           <form method="POST" action="/api/cart/remove">
-                                            <input type="hidden" name="key" value={key} />
+                                            {keys.map(k => <input type="hidden" name="key" value={k} />)}
                                             <button class="remove-from-cart btn btn-link p-0" type="submit" title="Видалити">
                                               <i class="fa fa-trash-o" aria-hidden="true"></i>
                                             </button>
@@ -181,18 +219,17 @@ const fmtUA = (n: number) => n.toLocaleString("uk-UA");
                     <div class="d-flex gap-2 mt-3">
                       <a href="/" class="btn btn-secondary">Продовжити покупки</a>
                       {items.length ? (
-                         <form method="POST" action="/api/cart/clear" class="ml-2">
-                           <button class="btn btn-outline-danger" type="submit">Очистити кошик</button>
-                         </form>
-                       ) : null}
+                        <form method="POST" action="/api/cart/clear" class="ml-2">
+                          <button class="btn btn-outline-danger" type="submit">Очистити кошик</button>
+                        </form>
+                      ) : null}
                     </div>
 
-                   
-                      {items.length ? (
+                    {items.length ? (
                       <a href="/checkout" class="continue btn btn-primary pull-xs-right mt-3">
-                          Continue
+                        Continue
                       </a>
-                      ) : null}
+                    ) : null}
                   </div>
 
                   <div class="cart-grid-right col-xs-12 col-lg-3">
