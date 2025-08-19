@@ -1,7 +1,9 @@
 ---
-const res = await fetch('https://miriam-backend.onrender.com/api/menu-categories?populate=*');
+const res = await fetch(
+  "https://miriam-backend.onrender.com/api/menu-categories?populate=*",
+);
 const json = await res.json();
-const categories = json.data?.filter(c => c && c.slug && c.name); 
+const categories = json.data?.filter((c) => c && c.slug && c.name);
 ---
 
 <div class="container position">
@@ -10,28 +12,30 @@ const categories = json.data?.filter(c => c && c.slug && c.name);
       <div class="box-content">
         <div class="verticalmenu" role="navigation">
           <ul class="menu level1">
-            {categories.map((category) => {
-              const iconUrl = category.icon?.url;
-              const iconName = category.icon?.name;
-              const slug = category.slug;
-              const name = category.name;
+            {
+              categories.map((category) => {
+                const iconUrl = category.icon?.url;
+                const iconName = category.icon?.name;
+                const slug = category.slug;
+                const name = category.name;
 
-              return (
-                <li class="item">
-                  <a href={`/category/${slug}`} class="hasicon" title={name}>
-                    {iconUrl && (
-                      <img
-                        src={`https://miriam-backend.onrender.com${iconUrl}`}
-                        alt={iconName || name}
-                        width="23"
-                        height="19"
-                      />
-                    )}
-                    {name}
-                  </a>
-                </li>
-              );
-            })}
+                return (
+                  <li class="item">
+                    <a href={`/category/${slug}`} class="hasicon" title={name}>
+                      {iconUrl && (
+                        <img
+                          src={iconUrl}
+                          alt={iconName || name}
+                          width="23"
+                          height="19"
+                        />
+                      )}
+                      {name}
+                    </a>
+                  </li>
+                );
+              })
+            }
             <li class="more item">Show More</li>
           </ul>
         </div>

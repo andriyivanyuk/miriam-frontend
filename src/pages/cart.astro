@@ -216,20 +216,24 @@ const fmtUA = (n: number) => n.toLocaleString("uk-UA");
                       <p>Кошик порожній.</p>
                     )}
 
-                    <div class="d-flex gap-2 mt-3">
-                      <a href="/" class="btn btn-secondary">Продовжити покупки</a>
-                      {items.length ? (
-                        <form method="POST" action="/api/cart/clear" class="ml-2">
-                          <button class="btn btn-outline-danger" type="submit">Очистити кошик</button>
-                        </form>
-                      ) : null}
-                    </div>
+                   <div class="d-flex justify-content-between align-items-center flex-wrap mt-3">
+                        <div class="d-flex align-items-center mb-2 mb-md-0">
+                           <a href="/" class="btn btn-outline-secondary">Продовжити покупки</a>
+                        </div>
 
-                    {items.length ? (
-                      <a href="/checkout" class="continue btn btn-primary pull-xs-right mt-3">
-                        Continue
-                      </a>
-                    ) : null}
+                   <div class="d-flex align-items-center">
+                       {items.length ? (
+                          <form method="POST" action="/api/cart/clear" class="mr-2 mb-0">
+                               <button class="btn btn-outline-danger" type="submit">Очистити кошик</button>
+                          </form>
+                          ) : null}
+
+                   {items.length ? (
+                        <a href="/checkout" class="btn btn-outline-secondary">Оформити замовлення</a>
+                     ) : null}
+                    </div>
+                  </div>
+
                   </div>
 
                   <div class="cart-grid-right col-xs-12 col-lg-3">

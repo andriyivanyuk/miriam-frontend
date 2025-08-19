@@ -1,0 +1,83 @@
+.summary-card {
+  background: #2d2f31;
+  color: #fff;
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+}
+.summary-item {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+  padding-bottom: 1rem;
+}
+.summary-item img {
+  width: 80px;
+  height: auto;
+  border-radius: 4px;
+  object-fit: cover;
+}
+.summary-details {
+  flex: 1;
+}
+.item-title {
+  font-weight: 600;
+  font-size: 1.05rem;
+  margin-bottom: 0.25rem;
+}
+.item-price {
+  font-size: 0.95rem;
+  color: #ccc;
+  margin-bottom: 0.25rem;
+}
+.item-attr {
+  font-size: 0.9rem;
+  color: #ddd;
+}
+.totals {
+  margin-top: 1rem;
+  font-size: 1.05rem;
+}
+.totals .fw-bold {
+  font-size: 1.15rem;
+}
+
+/* Простий toast без залежності від bootstrap.js */
+.toast-wrap {
+  position: fixed;
+  right: 1rem;
+  bottom: 1rem;
+  z-index: 1080;
+}
+.toast-lite {
+  min-width: 280px;
+  max-width: 400px;
+  background: #343a40;
+  color: #fff;
+  border-radius: 0.25rem;
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+  padding: 0.75rem 1rem;
+  opacity: 0;
+  transform: translateY(8px);
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease;
+}
+.toast-lite.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+.toast-lite.success {
+  background: #28a745;
+}
+.toast-lite.error {
+  background: #dc3545;
+}
+.toast-lite .title {
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+.toast-lite .msg {
+  font-size: 0.95rem;
+}

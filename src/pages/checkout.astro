@@ -77,57 +77,12 @@ const CHECKOUT_JSON = safeJson({ api: API_BASE, token: API_TOKEN, items });
     <title>Оформлення замовлення</title>
     <link rel="stylesheet" href="/libs/bootstrap/css/bootstrap.min.css" />
     <link rel="stylesheet" href="/css/style.css" />
-    <style>
-      .summary-card {
-        background: #2d2f31;
-        color: #fff;
-        border-radius: 0.5rem;
-        padding: 1.5rem;
-      }
-      .summary-item {
-        display: flex;
-        gap: 1rem;
-        align-items: flex-start;
-        margin-bottom: 1rem;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.15);
-        padding-bottom: 1rem;
-      }
-      .summary-item img {
-        width: 80px;
-        height: auto;
-        border-radius: 4px;
-        object-fit: cover;
-      }
-      .summary-details {
-        flex: 1;
-      }
-      .item-title {
-        font-weight: 600;
-        font-size: 1.05rem;
-        margin-bottom: 0.25rem;
-      }
-      .item-price {
-        font-size: 0.95rem;
-        color: #ccc;
-        margin-bottom: 0.25rem;
-      }
-      .item-attr {
-        font-size: 0.9rem;
-        color: #ddd;
-      }
-      .totals {
-        margin-top: 1rem;
-        font-size: 1.05rem;
-      }
-      .totals .fw-bold {
-        font-size: 1.15rem;
-      }
-    </style>
+    <link rel="stylesheet" href="/css/checkout.css" />
   </head>
 
   <body class="product-checkout checkout-cart">
     <Header />
-    <div id="checkout" class="main-content">
+    <div id="checkout" class="main-content mt-5">
       <div class="container">
         <h1 class="h3 mb-4">Оформлення замовлення</h1>
 
@@ -145,6 +100,7 @@ const CHECKOUT_JSON = safeJson({ api: API_BASE, token: API_TOKEN, items });
                   name="first_name"
                   required
                 />
+                <div class="invalid-feedback">Вкажіть ім’я.</div>
               </div>
 
               <div class="mb-3">
@@ -155,6 +111,7 @@ const CHECKOUT_JSON = safeJson({ api: API_BASE, token: API_TOKEN, items });
                   name="last_name"
                   required
                 />
+                <div class="invalid-feedback">Вкажіть прізвище.</div>
               </div>
 
               <div class="mb-3">
@@ -165,11 +122,15 @@ const CHECKOUT_JSON = safeJson({ api: API_BASE, token: API_TOKEN, items });
                   name="email"
                   required
                 />
+                <div class="invalid-feedback">Вкажіть коректний email.</div>
               </div>
 
               <div class="mb-3">
                 <label class="form-label">Телефон *</label>
                 <input type="tel" class="form-control" name="phone" required />
+                <div class="invalid-feedback">
+                  Вкажіть телефон у форматі +380...
+                </div>
               </div>
 
               <h2 class="h5 section-title">Спосіб доставки</h2>
@@ -197,6 +158,7 @@ const CHECKOUT_JSON = safeJson({ api: API_BASE, token: API_TOKEN, items });
                   name="delivery_address"
                   placeholder="вул. Прикладна, 1"
                 />
+                <div class="invalid-feedback">Вкажіть адресу для кур’єра.</div>
                 <div class="form-note">Заповнюйте, якщо обрали кур’єра.</div>
               </div>
 
@@ -210,6 +172,7 @@ const CHECKOUT_JSON = safeJson({ api: API_BASE, token: API_TOKEN, items });
                     name="np_city"
                     placeholder="Київ"
                   />
+                  <div class="invalid-feedback">Вкажіть місто.</div>
                 </div>
                 <div class="mb-3">
                   <label class="form-label">Відділення (Нова Пошта)</label>
@@ -219,6 +182,7 @@ const CHECKOUT_JSON = safeJson({ api: API_BASE, token: API_TOKEN, items });
                     name="np_branch"
                     placeholder="Відділення №..."
                   />
+                  <div class="invalid-feedback">Вкажіть відділення.</div>
                 </div>
               </div>
 
@@ -271,8 +235,8 @@ const CHECKOUT_JSON = safeJson({ api: API_BASE, token: API_TOKEN, items });
                   placeholder="Ваші побажання..."></textarea>
               </div>
 
-              <div class="d-flex gap-2">
-                <a href="/cart" class="btn btn-outline-secondary"
+              <div class="d-flex align-items-center">
+                <a href="/cart" class="btn btn-outline-secondary mr-2"
                   >Назад до кошика</a
                 >
                 <button class="btn btn-dark" type="submit"
@@ -330,117 +294,30 @@ const CHECKOUT_JSON = safeJson({ api: API_BASE, token: API_TOKEN, items });
         </div>
       </div>
     </div>
+
+    <!-- Toast container -->
+    <div class="toast-wrap" aria-live="polite" aria-atomic="true">
+      <div
+        id="toast"
+        class="toast-lite"
+        role="alert"
+        aria-live="assertive"
+        aria-atomic="true"
+      >
+        <div class="title"></div>
+        <div class="msg"></div>
+      </div>
+    </div>
+
+    <Footer />
+
+    <!-- Дані для клієнта -->
+    <script
+      type="application/json"
+      id="checkout-data"
+      set:html={CHECKOUT_JSON}
+    />
+
+    <script src="/js/checkout.js" defer></script>
   </body>
-
-  <Footer />
-
-  <!-- Дані для клієнта -->
-  <script type="application/json" id="checkout-data" set:html={CHECKOUT_JSON} />
-
-  <script is:inline>
-    (function () {
-      const cfgEl = document.getElementById("checkout-data");
-      let CFG = { api: "", token: "", items: [] };
-      try {
-        CFG = JSON.parse(cfgEl?.textContent || "{}");
-      } catch {}
-
-      const API = CFG.api; // прод-URL
-      const TOKEN = CFG.token || ""; // публічний токен
-      const ITEMS = Array.isArray(CFG.items) ? CFG.items : [];
-
-      const form = document.getElementById("checkoutForm");
-      const select = document.getElementById("deliverySelect");
-      const npRow = document.getElementById("npRow");
-      const addressGroup = document.getElementById("addressGroup");
-
-      function toggleDeliveryBlocks() {
-        const v = select.value;
-        npRow.style.display = v === "nova_poshta" ? "block" : "none";
-        addressGroup.style.display = v === "courier_kyiv" ? "block" : "none";
-      }
-      toggleDeliveryBlocks();
-      select.addEventListener("change", toggleDeliveryBlocks);
-
-      form.addEventListener("submit", async (e) => {
-        e.preventDefault();
-        const fd = new FormData(form);
-
-        const first_name = String(fd.get("first_name") || "").trim();
-        const last_name = String(fd.get("last_name") || "").trim();
-        const email = String(fd.get("email") || "").trim();
-        const phone = String(fd.get("phone") || "").trim();
-        const delivery_method = String(
-          fd.get("delivery_method") || "courier_kyiv",
-        );
-        const payment_method = String(
-          fd.get("payment_method") || "bank_transfer",
-        );
-        const prepayment_agreement = !!fd.get("prepayment_agreement");
-        const comment = String(fd.get("comment") || "").trim();
-
-        let delivery_address = "";
-        if (delivery_method === "courier_kyiv") {
-          delivery_address = String(fd.get("delivery_address") || "").trim();
-        } else if (delivery_method === "nova_poshta") {
-          delivery_address = [fd.get("np_city"), fd.get("np_branch")]
-            .filter(Boolean)
-            .join(", ");
-        } else {
-          delivery_address = "Самовивіз";
-        }
-
-        if (!first_name || !last_name || !email || !phone) {
-          alert("Заповніть обовʼязкові поля (Імʼя, Прізвище, Email, Телефон).");
-          return;
-        }
-
-        const payload = {
-          data: {
-            first_name,
-            last_name,
-            email,
-            phone,
-            delivery_method,
-            delivery_address,
-            payment_method,
-            prepayment_agreement,
-            comment,
-            items: ITEMS,
-          },
-        };
-
-        try {
-          // НАПРЯМУ НА ПРОД STRAPI (без проксі)
-          const res = await fetch(`${API}/api/orders`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              ...(TOKEN ? { Authorization: `Bearer ${TOKEN}` } : {}),
-            },
-            body: JSON.stringify(payload),
-          });
-
-          if (!res.ok) {
-            const err = await res.json().catch(() => ({}));
-            console.error("Order error:", err);
-            alert(
-              "Сталася помилка при створенні замовлення. Спробуйте ще раз.",
-            );
-            return;
-          }
-
-          alert("Замовлення успішно створено! Дякуємо ❤️");
-          await fetch("/api/cart/clear", {
-            method: "POST",
-            credentials: "same-origin",
-          });
-          location.href = "/";
-        } catch (err) {
-          console.error(err);
-          alert("Мережева помилка. Перевірте інтернет або спробуйте пізніше.");
-        }
-      });
-    })();
-  </script>
 </html>

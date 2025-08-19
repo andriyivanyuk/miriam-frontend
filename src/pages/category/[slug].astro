@@ -148,7 +148,7 @@ try {
                                 products.map((product) => {
                                   const komodType = product.product_type?.find(
                                     (pt) =>
-                                      pt.__component === "product-types.komodi"
+                                      pt.__component === "product-types.komodi",
                                   );
                                   if (!komodType) return null;
 
@@ -194,47 +194,35 @@ try {
                                         <div class="product-description">
                                           <div class="product-groups">
                                             <div class="product-title">
-                                              <a href="#">{modelName}</a>
+                                              <a
+                                                href={`/product/${product.documentId}`}
+                                              >
+                                                {modelName}
+                                              </a>
                                             </div>
-                                            <div class="rating">
-                                              <div class="star-content">
-                                                <>
-                                                  <div class="star" />
-                                                  <div class="star" />
-                                                  <div class="star" />
-                                                  <div class="star" />
-                                                  <div class="star" />
-                                                </>
-                                              </div>
-                                            </div>
+
                                             <div class="product-group-price">
                                               <div class="product-price-and-shipping">
                                                 <span class="price">
-                                                  {basicPrice} грн
+                                                  Ціна від {basicPrice} грн
                                                 </span>
                                               </div>
                                             </div>
                                           </div>
                                           <div class="product-buttons d-flex justify-content-center">
-                                            <form
-                                              action="#"
-                                              method="post"
-                                              class="formAddToCart"
-                                            >
+                                            <form class="formAddToCart">
                                               <input
                                                 type="hidden"
                                                 name="id_product"
                                                 value="1"
                                               />
                                               <a
+                                                style="width: 100%;"
                                                 class="add-to-cart"
-                                                href="#"
+                                                href={`/product/${product.documentId}`}
                                                 data-button-action="add-to-cart"
                                               >
-                                                <i
-                                                  class="fa fa-shopping-cart"
-                                                  aria-hidden="true"
-                                                />
+                                                <div>Деталі</div>
                                               </a>
                                             </form>
                                           </div>
@@ -257,7 +245,7 @@ try {
                                 products.map((product) => {
                                   const komodType = product.product_type?.find(
                                     (pt) =>
-                                      pt.__component === "product-types.komodi"
+                                      pt.__component === "product-types.komodi",
                                   );
                                   if (!komodType) return null;
 
