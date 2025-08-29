@@ -6,7 +6,15 @@ export const prerender = false;
 
 const productId = Astro.params.id;
 
-const apiUrl = `https://miriam-backend.onrender.com/api/products/${productId}?populate[product_type][on][product-types.komodi][populate][0]=body_material.img&populate[product_type][on][product-types.komodi][populate][1]=front_materials.img&populate[product_type][on][product-types.komodi][populate][2]=images&populate[product_type][on][product-types.komodi][populate][3]=size_option`;
+// const apiUrl = `https://miriam-backend.onrender.com/api/products/${productId}?populate[product_type][on][product-types.komodi][populate][0]=body_material.img&populate[product_type][on][product-types.komodi][populate][1]=front_materials.img&populate[product_type][on][product-types.komodi][populate][2]=images&populate[product_type][on][product-types.komodi][populate][3]=size_option`;
+
+const apiUrl =
+  `https://miriam-backend.onrender.com/api/products/${productId}` +
+  `?populate=product_type.images,` +
+  `product_type.body_material.img,` +
+  `product_type.front_materials.img,` +
+  `product_type.size_option`;
+
 
 const search = Astro.url.searchParams;
 const selectedWidth  = Number(search.get("width"))  || null;

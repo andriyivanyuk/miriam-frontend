@@ -19,6 +19,8 @@ try {
   category = json.data?.[0];
   products = category?.products || [];
 
+  console.log(products);
+
   products.sort((a, b) => {
     const aPrice = a.product_type?.[0]?.basic_price ?? 0;
     const bPrice = b.product_type?.[0]?.basic_price ?? 0;
@@ -146,25 +148,20 @@ try {
                             {
                               products.length > 0 ? (
                                 products.map((product) => {
-                                  const komodType = product.product_type?.find(
-                                    (pt) =>
-                                      pt.__component === "product-types.komodi",
-                                  );
-                                  if (!komodType) return null;
+                                  const pt = product.product_type?.[0];
+                                  if (!pt) return null;
 
                                   const modelName =
-                                    komodType.model_name || "Без назви";
+                                    pt.model_name || "Без назви";
                                   const basicPrice =
-                                    komodType.basic_price ?? "Ціна не вказана";
+                                    pt.basic_price ?? "Ціна не вказана";
                                   const imageCover =
-                                    komodType.images?.[0]?.formats?.medium
-                                      ?.url ||
-                                    komodType.images?.[0]?.url ||
+                                    pt.images?.[0]?.formats?.medium?.url ||
+                                    pt.images?.[0]?.url ||
                                     null;
                                   const imageSecondary =
-                                    komodType.images?.[1]?.formats?.medium
-                                      ?.url ||
-                                    komodType.images?.[1]?.url ||
+                                    pt.images?.[1]?.formats?.medium?.url ||
+                                    pt.images?.[1]?.url ||
                                     imageCover;
 
                                   return (
@@ -243,25 +240,20 @@ try {
                             {
                               products.length > 0 ? (
                                 products.map((product) => {
-                                  const komodType = product.product_type?.find(
-                                    (pt) =>
-                                      pt.__component === "product-types.komodi",
-                                  );
-                                  if (!komodType) return null;
+                                  const pt = product.product_type?.[0];
+                                  if (!pt) return null;
 
                                   const modelName =
-                                    komodType.model_name || "Без назви";
+                                    pt.model_name || "Без назви";
                                   const basicPrice =
-                                    komodType.basic_price ?? "Ціна не вказана";
+                                    pt.basic_price ?? "Ціна не вказана";
                                   const imageCover =
-                                    komodType.images?.[0]?.formats?.medium
-                                      ?.url ||
-                                    komodType.images?.[0]?.url ||
+                                    pt.images?.[0]?.formats?.medium?.url ||
+                                    pt.images?.[0]?.url ||
                                     null;
                                   const imageSecondary =
-                                    komodType.images?.[1]?.formats?.medium
-                                      ?.url ||
-                                    komodType.images?.[1]?.url ||
+                                    pt.images?.[1]?.formats?.medium?.url ||
+                                    pt.images?.[1]?.url ||
                                     imageCover;
 
                                   return (
